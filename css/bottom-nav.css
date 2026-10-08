@@ -1,0 +1,237 @@
+/* Pustaka Torah - navigasi bawah (mobile) + sheet "Lainnya"
+   Tampil hanya di layar <= 768px. Warna bisa diganti lewat variabel --ptn-*.
+   Muat SETELAH css/features.css supaya tidak tertimpa. */
+
+:root {
+  --ptn-h: 60px;
+  --ptn-bg: #ffffff;
+  --ptn-fg: #5f5e5a;
+  --ptn-active: #2c3e8f;
+  --ptn-active-bg: #e8ebf7;
+  --ptn-border: rgba(0, 0, 0, 0.12);
+  --ptn-card: #f6f5f1;
+  --ptn-overlay: rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ptn-bg: #1e2327;
+    --ptn-fg: #b4b2a9;
+    --ptn-active: #aab6f0;
+    --ptn-active-bg: #26325f;
+    --ptn-border: rgba(255, 255, 255, 0.14);
+    --ptn-card: #2a3036;
+    --ptn-overlay: rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Jika aplikasi memakai tema manual, sesuaikan selektor ini dengan milik Anda */
+[data-theme="dark"],
+html.dark,
+body.dark {
+  --ptn-bg: #1e2327;
+  --ptn-fg: #b4b2a9;
+  --ptn-active: #aab6f0;
+  --ptn-active-bg: #26325f;
+  --ptn-border: rgba(255, 255, 255, 0.14);
+  --ptn-card: #2a3036;
+  --ptn-overlay: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] {
+  --ptn-bg: #ffffff;
+  --ptn-fg: #5f5e5a;
+  --ptn-active: #2c3e8f;
+  --ptn-active-bg: #e8ebf7;
+  --ptn-border: rgba(0, 0, 0, 0.12);
+  --ptn-card: #f6f5f1;
+  --ptn-overlay: rgba(0, 0, 0, 0.4);
+}
+
+.ptn-bar,
+.ptn-overlay,
+.ptn-sheet {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  body.ptn-pad:not(.ptn-hide) {
+    padding-bottom: calc(var(--ptn-h) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .ptn-bar {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    height: calc(var(--ptn-h) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: var(--ptn-bg);
+    border-top: 0.5px solid var(--ptn-border);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Panel bawah (komentar, kamus, naskah) naik di atas nav jika posisinya fixed */
+  body.ptn-pad:not(.ptn-hide) #panel {
+    bottom: calc(var(--ptn-h) + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.ptn-hide .ptn-bar,
+  body.ptn-hide .ptn-overlay,
+  body.ptn-hide .ptn-sheet {
+    display: none;
+  }
+
+  .ptn-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-height: 48px;
+    padding: 4px 2px;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 11px;
+    line-height: 1.2;
+    color: var(--ptn-fg);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .ptn-tab .ptn-ico {
+    width: 24px;
+    height: 24px;
+    padding: 2px 14px;
+    box-sizing: content-box;
+    border-radius: 999px;
+    transition: background 0.15s;
+  }
+
+  .ptn-tab[aria-current="page"],
+  .ptn-tab.is-active {
+    color: var(--ptn-active);
+  }
+
+  .ptn-tab[aria-current="page"] .ptn-ico,
+  .ptn-tab.is-active .ptn-ico {
+    background: var(--ptn-active-bg);
+  }
+
+  .ptn-tab:focus-visible,
+  .ptn-item:focus-visible {
+    outline: 2px solid var(--ptn-active);
+    outline-offset: -2px;
+  }
+
+  .ptn-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 990;
+    background: var(--ptn-overlay);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0s 0.2s;
+  }
+
+  .ptn-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .ptn-sheet {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--ptn-h) + env(safe-area-inset-bottom, 0px));
+    z-index: 995;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 10px 16px 16px;
+    background: var(--ptn-bg);
+    border-radius: 20px 20px 0 0;
+    border-top: 0.5px solid var(--ptn-border);
+    transform: translateY(110%);
+    visibility: hidden;
+    transition: transform 0.22s ease, visibility 0s 0.22s;
+  }
+
+  .ptn-sheet.is-open {
+    transform: none;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .ptn-grab {
+    width: 36px;
+    height: 4px;
+    margin: 0 auto 12px;
+    border-radius: 2px;
+    background: var(--ptn-border);
+  }
+
+  .ptn-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .ptn-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-height: 48px;
+    padding: 12px;
+    border: 0.5px solid var(--ptn-border);
+    border-radius: 12px;
+    background: var(--ptn-card);
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .ptn-item .ptn-ico {
+    width: 22px;
+    height: 22px;
+    color: var(--ptn-fg);
+  }
+
+  .ptn-item[hidden] {
+    display: none;
+  }
+}
+
+.ptn-ico {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ptn-sheet,
+  .ptn-overlay,
+  .ptn-tab .ptn-ico {
+    transition: none;
+  }
+}
+
+/* Di ponsel semua menu header sudah ada di nav bawah dan sheet "Lainnya".
+   Hapus blok ini jika ingin menu header tetap tampil. */
+@media (max-width: 768px) {
+  body.ptn-pad header .menu {
+    display: none;
+  }
+}

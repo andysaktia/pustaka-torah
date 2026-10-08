@@ -61,3 +61,350 @@
   font-size: 13px;
   color: var(--mut);
 }
+
+/* ===== Kontrol layar baca untuk ponsel (js/features/reader-tools.js) ===== */
+
+.ri {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Di desktop semua elemen ponsel disembunyikan; toolbar lama dipakai apa adanya */
+.rt-acts,
+.rt-end,
+.rto,
+.rts,
+.rtp,
+.tb .sm {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Judul pasal + ikon aksi di sisi kanan */
+  .rt-h2 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+  }
+
+  .rt-acts {
+    display: inline-flex;
+    gap: 6px;
+    margin-left: auto;
+  }
+
+  .rt-ib {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--bd);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--mut);
+    cursor: pointer;
+  }
+
+  .rt-ib.on {
+    color: var(--ac);
+    border-color: var(--ac);
+    background: color-mix(in srgb, var(--ac) 12%, transparent);
+  }
+
+  /* Toolbar menjadi segmented control tiga pilihan; kontrol lain pindah ke sheet "Aa" */
+  .tb {
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+
+  .tb > :not([data-m]) {
+    display: none;
+  }
+
+  .tb .lg {
+    display: none;
+  }
+
+  .tb .sm {
+    display: inline;
+  }
+
+  .tb > [data-m] {
+    flex: 1;
+    min-height: 40px;
+    margin: 0 0 0 -1px;
+    padding: 0 4px;
+    border: 1px solid var(--bd);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 13px;
+  }
+
+  .tb > [data-m='both'] {
+    margin-left: 0;
+    border-radius: 10px 0 0 10px;
+  }
+
+  .tb > [data-m='en'] {
+    border-radius: 0 10px 10px 0;
+  }
+
+  .tb > [data-m].on {
+    position: relative;
+    z-index: 1;
+    border-color: var(--ac);
+    color: var(--ac);
+    background: color-mix(in srgb, var(--ac) 12%, transparent);
+  }
+
+  /* Blok tandai-dibaca di akhir pasal */
+  .rt-end {
+    display: block;
+    margin: 18px 0 0;
+  }
+
+  .rt-end button {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .rt-end button.on {
+    border-color: var(--ac);
+    color: var(--ac);
+    background: color-mix(in srgb, var(--ac) 12%, transparent);
+  }
+
+  /* Latar gelap, sheet, dan pemilih: duduk di atas nav bawah bila ada */
+  .rto {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 990;
+    background: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0s 0.2s;
+  }
+
+  .rto.open {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .rts,
+  .rtp {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--ptn-h, 0px) + env(safe-area-inset-bottom, 0px));
+    background: var(--bg);
+    visibility: hidden;
+    transition: transform 0.22s ease, visibility 0s 0.22s;
+  }
+
+  .rts.open,
+  .rtp.open {
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .rts {
+    z-index: 995;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: 10px 16px 16px;
+    border-top: 1px solid var(--bd);
+    border-radius: 20px 20px 0 0;
+    transform: translateY(110%);
+  }
+
+  .rts.open {
+    transform: none;
+  }
+
+  .rt-grab {
+    width: 36px;
+    height: 4px;
+    margin: 0 auto 10px;
+    border-radius: 2px;
+    background: var(--bd);
+  }
+
+  .rts-h {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .rts-l {
+    margin: 0 0 6px;
+    font-size: 12px;
+    color: var(--mut);
+  }
+
+  .rts-step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .rts-step button {
+    flex: none;
+    width: 48px;
+    min-height: 44px;
+  }
+
+  .rts-pv {
+    flex: 1;
+    text-align: center;
+    direction: rtl;
+    font-family: 'Frank Ruhl Libre', serif;
+    font-size: calc(var(--fs) * 1.3);
+    line-height: 1.5;
+  }
+
+  .rts-sz {
+    min-width: 28px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--mut);
+  }
+
+  .rts-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 52px;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid var(--bd);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .rts-row > span:first-child {
+    flex: 1;
+  }
+
+  .rts-row .v {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    color: var(--mut);
+  }
+
+  .rts-row .ri {
+    flex: none;
+    color: var(--mut);
+  }
+
+  .rtp {
+    top: 0;
+    z-index: 996;
+    overflow-y: auto;
+    transform: translateX(100%);
+  }
+
+  .rtp.open {
+    transform: none;
+  }
+
+  .rtp-h {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 12px 10px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--bd);
+    font-size: 16px;
+  }
+
+  .rtp-g {
+    padding: 14px 16px 4px;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--mut);
+  }
+
+  .rtp-o {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 16px;
+    border: 0;
+    border-top: 1px solid var(--bd);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 14px;
+    line-height: 1.35;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .rtp-o span {
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .rtp-o .ri {
+    flex: none;
+    color: var(--ac);
+  }
+
+  .rtp-o.on {
+    background: color-mix(in srgb, var(--ac) 10%, transparent);
+  }
+
+  .rt-ib:focus-visible,
+  .rts-row:focus-visible,
+  .rtp-o:focus-visible,
+  .tb > [data-m]:focus-visible,
+  .rt-end button:focus-visible {
+    outline: 2px solid var(--ac);
+    outline-offset: -2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rts,
+  .rtp,
+  .rto {
+    transition: none;
+  }
+}

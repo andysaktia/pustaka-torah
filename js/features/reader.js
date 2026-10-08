@@ -66,6 +66,7 @@ async function read(ref) {
     )
     .slice(0, 60);
   const hasId = trs.some((v) => v.actualLanguage === 'id');
+  window.TRS = trs; // dipakai pemilih terjemahan di ponsel (reader-tools.js)
   const sel = trs.length
     ? `<select id="vsel" aria-label="Pilih terjemahan" onchange="S.tr=this.value;apply();route()"><option value="">Terjemahan bawaan</option>${trs
         .map((v) => {
@@ -92,12 +93,13 @@ async function read(ref) {
     .filter(Boolean)
     .map((v) => `${esc(v.versionTitle)} (${esc(v.license || 'lisensi tidak disebutkan')})`)
     .join(' · ');
+  const rt = rtMarkup(trs, pc);
   app.innerHTML = `<nav class="crumb"><a href="#/">Beranda</a>${cat.map((c, i) => ` › <a href="#/c/${encP(cat.slice(0, i + 1))}">${esc(i ? c : dn(c))}</a>`).join('')}${d.indexTitle ? ` › <a href="#/b/${enc(d.indexTitle)}">${esc(d.indexTitle)}</a>` : ''}</nav>
- <h2>${esc(d.ref || ref)} <span class="he" style="color:var(--gold)">${esc(d.heRef)}</span>${stg(cat[0]) >= 0 ? `<span class="tag">${esc(dn(cat[0]))} · Tahap ${stg(cat[0]) + 1}</span>` : ''}</h2>
- <div class="tb"><button data-m="both" onclick="S.mode='both';apply()">Ibrani + Terjemahan</button><button data-m="he" onclick="S.mode='he';apply()">Ibrani</button><button data-m="en" onclick="S.mode='en';apply()">Terjemahan</button>
+ <h2 class="rt-h2">${esc(d.ref || ref)} <span class="he" style="color:var(--gold)">${esc(d.heRef)}</span>${stg(cat[0]) >= 0 ? `<span class="tag">${esc(dn(cat[0]))} · Tahap ${stg(cat[0]) + 1}</span>` : ''}${rt.acts}</h2>
+ <div class="tb"><button data-m="both" onclick="S.mode='both';apply()"><span class="lg">Ibrani + Terjemahan</span><span class="sm">Dua bahasa</span></button><button data-m="he" onclick="S.mode='he';apply()">Ibrani</button><button data-m="en" onclick="S.mode='en';apply()">Terjemahan</button>
  <button aria-label="Perkecil huruf" onclick="S.size=Math.max(14,S.size-2);apply()">A−</button><button aria-label="Perbesar huruf" onclick="S.size=Math.min(34,S.size+2);apply()">A+</button><button onclick="ms(window.RF)">Naskah kuno</button>${pc ? rdBtn(pc) : ''}${sel}</div>
  <p class="muted" style="font-size:13px;margin:0">Ketuk kata Ibrani untuk melihat artinya. Ketuk bagian lain untuk komentar. ${note}</p><div id="rt"></div>${n ? '' : '<p class="muted">Teks tidak tersedia untuk bagian ini. Coba bagian lain dari daftar kitab.</p>'}
- <div id="txt" class="text both">${seg}</div>${nav}<p class="attr">Sumber: Sefaria.org · ${attr}</p>`;
+ <div id="txt" class="text both">${seg}</div>${rt.end}${nav}<p class="attr">Sumber: Sefaria.org · ${attr}</p>${rt.tools}`;
   // Delegasi klik: kata Ibrani → kamus, bagian lain → komentar
   document.getElementById('txt').onclick = (e) => {
     const w = e.target.closest('.w');
@@ -110,6 +112,7 @@ async function read(ref) {
   };
   topicsFor(d.ref || ref);
   apply();
+  rtInit();
 }
 
 /**
