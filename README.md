@@ -1,8 +1,8 @@
 # 📜 Pustaka Torah
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![CI](https://github.com/USERNAME/pustaka-torah/actions/workflows/ci.yml/badge.svg)](https://github.com/USERNAME/pustaka-torah/actions/workflows/ci.yml)
-[![Deploy with Vercel](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/USERNAME/pustaka-torah)
+[![CI](https://github.com/andysaktia/pustaka-torah/actions/workflows/ci.yml/badge.svg)](https://github.com/andysaktia/pustaka-torah/actions/workflows/ci.yml)
+[![Deploy with Vercel](https://img.shields.io/badge/deploy-Vercel-black?logo=vercel)](https://vercel.com/new/clone?repository-url=https://github.com/andysaktia/pustaka-torah)
 ![Tanpa build](https://img.shields.io/badge/build-none-brightgreen) ![Vanilla JS](https://img.shields.io/badge/vanilla-JS-f7df1e)
 
 **Pembaca web untuk Tanakh, Talmud, dan literatur Yahudi klasik.**
@@ -41,7 +41,7 @@ Data dari [Sefaria](https://www.sefaria.org).
 ## Mulai cepat
 
 ```bash
-git clone https://github.com/USERNAME/pustaka-torah.git
+git clone https://github.com/andysaktia/pustaka-torah.git
 cd pustaka-torah
 npm install      # hanya untuk Prettier (opsional)
 npm run dev      # http://localhost:3000
