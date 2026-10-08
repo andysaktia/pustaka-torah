@@ -1,0 +1,233 @@
+/**
+ * features.css — Panel komentar/kamus, istilah, kata Ibrani yang bisa diketuk, naskah kuno, lightbox, dan gaya tambahan.
+ */
+
+#panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 58vh;
+  overflow: auto;
+  background: var(--card);
+  border-top: 2px solid var(--ac);
+  padding: 14px 18px;
+  z-index: 10;
+  box-shadow: 0 -8px 24px #0003;
+}
+
+.x {
+  float: right;
+}
+
+.cm {
+  border-top: 1px solid var(--bd);
+  padding: 10px 0;
+  font-size: 15px;
+}
+
+.cm b {
+  display: block;
+}
+
+abbr {
+  text-decoration: underline dotted;
+  cursor: help;
+}
+
+.intro {
+  max-width: 60ch;
+}
+
+.stage {
+  border-left: 3px solid var(--gold);
+  padding: 4px 0 4px 14px;
+  margin: 16px 0;
+}
+
+.stage p {
+  margin: 4px 0;
+}
+
+.tag {
+  font-size: 12px;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  border-radius: 12px;
+  padding: 1px 8px;
+  margin-left: 6px;
+  font-family: Figtree, sans-serif;
+  white-space: nowrap;
+}
+
+dt {
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+dd {
+  margin: 0;
+  color: var(--mut);
+}
+
+select {
+  padding: 9px;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--fg);
+  font: inherit;
+  max-width: 100%;
+}
+
+.w {
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.w:hover {
+  background: color-mix(in srgb, var(--gold) 28%, transparent);
+}
+
+ol,
+ul {
+  padding-left: 20px;
+  margin: 4px 0;
+}
+
+.ms {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.ms img {
+  width: 100%;
+  border: 1px solid var(--bd);
+  border-radius: 6px;
+}
+
+#lb {
+  position: fixed;
+  inset: 0;
+  background: #000000ee;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+}
+
+.lbbar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 14px;
+  background: #00000066;
+}
+
+.lbbar button,
+.lbbar .btn {
+  background: #ffffff22;
+  color: #fff;
+  border-color: #ffffff55;
+  padding: 7px 12px;
+}
+
+.lbbar button:hover,
+.lbbar .btn:hover {
+  background: #ffffff44;
+}
+
+#lbs {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+
+#lbi {
+  max-width: 100%;
+  max-height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform-origin: center;
+  transition: opacity 0.2s;
+}
+
+.lbn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 26px;
+  line-height: 1;
+  padding: 0;
+  background: #00000099;
+  color: #fff;
+  border: 1px solid #ffffff66;
+  z-index: 2;
+}
+
+.lbn:hover {
+  background: #000000dd;
+}
+
+.lbp {
+  left: 10px;
+}
+
+.lbx {
+  right: 10px;
+}
+
+#lbm {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  text-align: center;
+  font-size: 13px;
+  color: #fffc;
+  pointer-events: none;
+  transition: opacity 0.6s;
+}
+
+pre {
+  overflow: auto;
+  font-size: 12px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.dn {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.dn input,
+.dn select {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+textarea {
+  white-space: pre-wrap;
+}
+
+.fr {
+  white-space: pre-wrap;
+  line-height: 1.8;
+}

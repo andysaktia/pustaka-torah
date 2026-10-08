@@ -1,0 +1,155 @@
+/**
+ * layout.css — Kerangka halaman: header & menu, area utama, hero, form, tombol, dan kartu jalur.
+ */
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--bd);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 5;
+}
+
+.logo {
+  font:
+    700 20px 'Frank Ruhl Libre',
+    serif;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.logo span {
+  color: var(--gold);
+}
+
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px 16px 90px;
+}
+
+.he {
+  font-family: 'Frank Ruhl Libre', 'SBL Hebrew', 'Times New Roman', serif;
+  direction: rtl;
+}
+
+.hero {
+  padding: 28px 0 8px;
+}
+
+.hero h1 {
+  font:
+    700 clamp(30px, 6vw, 44px)/1.15 'Source Serif 4',
+    Georgia,
+    serif;
+  margin: 0 0 8px;
+}
+
+.hero p {
+  margin: 0;
+  color: var(--mut);
+  max-width: 52ch;
+}
+
+form {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--fg);
+  font: inherit;
+}
+
+input:focus,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: 2px;
+}
+
+button,
+.btn {
+  padding: 10px 14px;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--fg);
+  cursor: pointer;
+  font: inherit;
+  text-decoration: none;
+  display: inline-block;
+}
+
+button.on,
+form button {
+  background: var(--ac);
+  color: var(--bg);
+  border-color: var(--ac);
+}
+
+.paths {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin: 22px 0;
+}
+
+.path {
+  padding: 22px 18px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  background: var(--card);
+  text-decoration: none;
+  color: var(--fg);
+  display: block;
+}
+
+.path:hover {
+  border-color: var(--ac);
+}
+
+.path .he {
+  display: block;
+  font-size: 38px;
+  color: var(--gold);
+  line-height: 1.2;
+}
+
+.path b {
+  font:
+    600 20px 'Source Serif 4',
+    serif;
+}
+
+.path small {
+  display: block;
+  color: var(--mut);
+}
+
+header {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.menu a {
+  margin: 0 6px;
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.menu a:hover {
+  color: var(--ac);
+}

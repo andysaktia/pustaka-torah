@@ -1,0 +1,46 @@
+/**
+ * base.css — Token desain (warna, ukuran huruf), tema gelap, reset, dan tipografi dasar.
+ */
+
+:root {
+  --bg: #f1f3f0;
+  --fg: #1c2230;
+  --mut: #69707d;
+  --card: #fbfcfb;
+  --ac: #2c3e8f;
+  --gold: #9a7421;
+  --bd: #dde1dc;
+  --fs: 20px;
+}
+
+[data-theme='dark'] {
+  --bg: #12151c;
+  --fg: #e6e8ec;
+  --mut: #9097a3;
+  --card: #1a1e27;
+  --ac: #8fa6f0;
+  --gold: #d4aa4f;
+  --bd: #2a303c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font:
+    16px/1.6 Figtree,
+    system-ui,
+    sans-serif;
+}
+
+a {
+  color: var(--ac);
+}

@@ -1,0 +1,20 @@
+{
+  "name": "pustaka-torah",
+  "version": "1.0.0",
+  "description": "Pembaca Tanakh, Talmud, dan literasi Yahudi berbahasa Indonesia (data: Sefaria). Static site tanpa build.",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "npx --yes serve . -l 3000",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check": "node scripts/check-syntax.js",
+    "test": "npm run check && npm run format:check"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

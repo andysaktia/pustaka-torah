@@ -1,0 +1,101 @@
+/**
+ * components.css — Komponen yang dipakai ulang: grid & kartu, chip, breadcrumb, judul, dan kisi nomor pasal.
+ */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 8px;
+}
+
+.card {
+  padding: 12px 14px;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  background: var(--card);
+  text-decoration: none;
+  color: var(--fg);
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  border-color: var(--ac);
+}
+
+.card .he {
+  font-size: 18px;
+  color: var(--gold);
+}
+
+.card small,
+.muted {
+  color: var(--mut);
+}
+
+.chip {
+  display: inline-block;
+  margin: 0 8px 8px 0;
+  padding: 6px 12px;
+  border: 1px solid var(--bd);
+  border-radius: 20px;
+  text-decoration: none;
+  color: var(--fg);
+  font-size: 14px;
+  background: var(--card);
+}
+
+.crumb {
+  font-size: 14px;
+  color: var(--mut);
+}
+
+h2 {
+  font:
+    600 26px 'Source Serif 4',
+    serif;
+  margin: 6px 0 10px;
+}
+
+.filter {
+  width: 100%;
+  margin: 4px 0 12px;
+}
+
+.nums {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+  gap: 8px;
+}
+
+.nums a {
+  text-align: center;
+  padding: 10px 0;
+  border: 1px solid var(--bd);
+  border-radius: 8px;
+  background: var(--card);
+  text-decoration: none;
+  color: var(--fg);
+}
+
+.nums a:hover {
+  border-color: var(--ac);
+}
+
+.nums a.rd {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.nums a i {
+  font-style: normal;
+  margin-left: 2px;
+  font-size: 11px;
+}
+
+.nums a small {
+  display: block;
+  font-size: 10px;
+  color: var(--mut);
+  line-height: 1.1;
+}

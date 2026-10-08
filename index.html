@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="id" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Pustaka Torah · Tanakh, Talmud &amp; Literasi Yahudi</title>
+    <meta
+      name="description"
+      content="Pembaca Tanakh, Talmud, dan literasi Yahudi berbahasa Indonesia: teks Ibrani berdampingan dengan terjemahan, komentar klasik, kamus, dan jalur belajar. Data dari Sefaria."
+    />
+    <meta name="theme-color" content="#2c3e8f" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Pustaka Torah" />
+    <meta
+      property="og:description"
+      content="Baca Tanakh, Talmud, dan literasi Yahudi: Ibrani + terjemahan, komentar, kamus, jalur belajar."
+    />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+
+    <!-- Font: Frank Ruhl Libre (Ibrani), Source Serif 4 (terjemahan), Figtree (antarmuka) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Source+Serif+4:wght@400;600&family=Figtree:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CSS: urutan penting (cascade). Jangan diubah tanpa memeriksa tampilan. -->
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/reader.css" />
+    <link rel="stylesheet" href="css/features.css" />
+  </head>
+  <body>
+    <!-- Header: logo, menu navigasi (router hash #/...), tombol tema -->
+    <header>
+      <a class="logo" href="#/">Pustaka <span>Torah</span></a>
+      <nav class="menu" aria-label="Menu utama">
+        <a href="#/j">Jalur Belajar</a>
+        <a href="#/p">Perpustakaan</a>
+        <a href="#/t">Topik</a>
+        <a href="#/h">Hari Ini</a>
+        <a href="#/g">Terjemahan</a>
+        <a href="#/k">Kamus</a>
+        <a href="#/f">Rujukan</a>
+        <a href="#/i">Istilah</a>
+      </nav>
+      <button id="th" aria-label="Ganti tema">Tema</button>
+    </header>
+
+    <!-- Wadah utama: seluruh halaman dirender ke sini oleh js/router.js -->
+    <main id="app">
+      <noscript>Aplikasi ini membutuhkan JavaScript untuk berjalan.</noscript>
+    </main>
+
+    <!-- Panel bawah: komentar, kamus, naskah kuno -->
+    <aside id="panel" hidden></aside>
+
+    <!--
+      JS: skrip klasik (bukan ES module) yang berbagi lingkup global, karena templat
+      HTML di dalam JS memakai handler inline (onclick="...").
+      Urutan WAJIB: utils → config → data → api → fitur → router → app.
+      Lihat docs/ARCHITECTURE.md.
+    -->
+    <script src="js/utils.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/features/home.js"></script>
+    <script src="js/features/library.js"></script>
+    <script src="js/features/reader.js"></script>
+    <script src="js/features/search.js"></script>
+    <script src="js/features/glossary.js"></script>
+    <script src="js/features/lexicon.js"></script>
+    <script src="js/features/topics.js"></script>
+    <script src="js/features/daily.js"></script>
+    <script src="js/features/translations.js"></script>
+    <script src="js/features/lightbox.js"></script>
+    <script src="js/features/manuscripts.js"></script>
+    <script src="js/features/share-image.js"></script>
+    <script src="js/features/references.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
