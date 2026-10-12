@@ -94,11 +94,17 @@ async function read(ref) {
     .map((v) => `${esc(v.versionTitle)} (${esc(v.license || 'lisensi tidak disebutkan')})`)
     .join(' · ');
   const rt = rtMarkup(trs, pc);
+  // Petunjuk sekali tampil: "Klik" untuk mouse, "Ketuk" untuk layar sentuh; dapat ditutup dan diingat
+  const act = '<span class="h-fine">Klik</span><span class="h-coarse">Ketuk</span>';
+  const hint = st.get('hint', 0)
+    ? ''
+    : `<p class="rth muted"><span>${act} kata Ibrani untuk melihat artinya. ${act} bagian lain untuk komentar.</span><button type="button" class="rth-x" onclick="st.set('hint',1);this.parentNode.remove()">Mengerti</button></p>`;
   app.innerHTML = `<nav class="crumb"><a href="#/">Beranda</a>${cat.map((c, i) => ` › <a href="#/c/${encP(cat.slice(0, i + 1))}">${esc(i ? c : dn(c))}</a>`).join('')}${d.indexTitle ? ` › <a href="#/b/${enc(d.indexTitle)}">${esc(d.indexTitle)}</a>` : ''}</nav>
  <h2 class="rt-h2">${esc(d.ref || ref)} <span class="he" style="color:var(--gold)">${esc(d.heRef)}</span>${stg(cat[0]) >= 0 ? `<span class="tag">${esc(dn(cat[0]))} · Tahap ${stg(cat[0]) + 1}</span>` : ''}${rt.acts}</h2>
+ <div id="rt"></div>
  <div class="tb"><button data-m="both" onclick="S.mode='both';apply()"><span class="lg">Ibrani + Terjemahan</span><span class="sm">Dua bahasa</span></button><button data-m="he" onclick="S.mode='he';apply()">Ibrani</button><button data-m="en" onclick="S.mode='en';apply()">Terjemahan</button>
- <button aria-label="Perkecil huruf" onclick="S.size=Math.max(14,S.size-2);apply()">A−</button><button aria-label="Perbesar huruf" onclick="S.size=Math.min(34,S.size+2);apply()">A+</button><button onclick="ms(window.RF)">Naskah kuno</button>${pc ? rdBtn(pc) : ''}${sel}</div>
- <p class="muted" style="font-size:13px;margin:0">Ketuk kata Ibrani untuk melihat artinya. Ketuk bagian lain untuk komentar. ${note}</p><div id="rt"></div>${n ? '' : '<p class="muted">Teks tidak tersedia untuk bagian ini. Coba bagian lain dari daftar kitab.</p>'}
+ <button id="tbdn" class="tbz" aria-label="Perkecil huruf" title="Perkecil huruf" onclick="S.size=Math.max(14,S.size-2);apply();rtSize()">A−</button><span id="tbsz" class="tbv" aria-live="polite"></span><button id="tbup" class="tbz" aria-label="Perbesar huruf" title="Perbesar huruf" onclick="S.size=Math.min(34,S.size+2);apply();rtSize()">A+</button><button class="tbn" title="Naskah kuno" onclick="ms(window.RF)">${RT_IC.sc}<span class="tbl">Naskah kuno</span></button>${pc ? rdBtn(pc) : ''}${sel}${d.prev ? `<a class="btn tbp tbp-p" href="#/r/${enc(d.prev)}" aria-label="Pasal sebelumnya" title="${esc(d.prev)}">${RT_IC.bk}</a>` : `<button class="btn tbp tbp-p" disabled aria-label="Tidak ada pasal sebelumnya">${RT_IC.bk}</button>`}${d.next ? `<a class="btn tbp tbp-n" href="#/r/${enc(d.next)}" aria-label="Pasal berikutnya" title="${esc(d.next)}">${RT_IC.gt}</a>` : `<button class="btn tbp tbp-n" disabled aria-label="Tidak ada pasal berikutnya">${RT_IC.gt}</button>`}</div>
+ ${hint}${note ? `<p class="muted rtn">${note}</p>` : ''}${n ? '' : '<p class="muted">Teks tidak tersedia untuk bagian ini. Coba bagian lain dari daftar kitab.</p>'}
  <div id="txt" class="text both">${seg}</div>${rt.end}${nav}<p class="attr">Sumber: Sefaria.org · ${attr}</p>${rt.tools}`;
   // Delegasi klik: kata Ibrani → kamus, bagian lain → komentar
   document.getElementById('txt').onclick = (e) => {
@@ -116,21 +122,22 @@ async function read(ref) {
 }
 
 /**
- * Panel bawah komentar & tautan terkait suatu ayat, dikelompokkan per kategori.
+ * Panel komentar & tautan terkait suatu ayat. Kerangka (header, tab, pilihan kategori) dibuat sekali
+ * oleh cpShell() (reader-tools.js); hanya daftar kartu yang diperbarui saat kategori berganti.
  */
 async function comments(r, i) {
   const p = document.getElementById('panel');
   p.hidden = false;
-  const head = `<button class="x" onclick="this.parentNode.hidden=true">Tutup</button><h3>Terkait ${esc(r)}:${i}</h3><p style="margin:0 0 6px"><button class="chip" onclick="shareImg(${i})">Bagikan sebagai gambar</button><button class="chip" onclick="shareImg(${i},'english',this)">Gambar Sefaria: Inggris</button><button class="chip" onclick="shareImg(${i},'hebrew',this)">Gambar Sefaria: Ibrani</button></p>`;
-  p.innerHTML = head + '<p class="muted">Memuat…</p>';
+  p.innerHTML = cpShell(r, i);
+  p.scrollTop = 0;
+  cpMark(i);
   // Muat tema ayat di latar belakang sambil komentar dimuat
-  window.CMT = '<span class="muted" style="font-size:13px">Memuat tema…</span>';
+  window.CMT = '';
   const key = (window.CMK = r + ':' + i);
   topicHtml(key, 'ayat').then((h) => {
     if (window.CMK !== key) return;
     window.CMT = h;
-    const e = document.getElementById('pt');
-    if (e) e.innerHTML = h;
+    cpTopics(h);
   });
   try {
     const ref = r + ':' + i;
@@ -147,6 +154,7 @@ async function comments(r, i) {
       }
     }
     if (!l) throw new Error(err || 'respons kosong');
+    if (window.CMK !== key) return;
     const all = l.filter((x) => x.sourceRef && x.category),
       n = {};
     all.forEach((x) => (n[x.category] = (n[x.category] || 0) + 1));
@@ -154,44 +162,46 @@ async function comments(r, i) {
       (a, b) => (b === 'Commentary') - (a === 'Commentary') || n[b] - n[a],
     );
     cats.push('__web');
-    window.CM = { head, all, n, cats, ref };
+    window.CM = { all, n, cats, ref };
+    const sc = document.getElementById('cms');
+    if (sc)
+      sc.innerHTML = `<label class="cmp-l" for="cmsel">Kategori</label><select id="cmsel" onchange="cmShow(this.value)">${cats.map((k) => `<option value="${esc(k)}">${esc(lbl(k))}${k === '__web' ? '' : ' (' + n[k] + ')'}</option>`).join('')}</select>`;
     cmShow(cats[0]);
   } catch (e) {
-    p.innerHTML =
-      head +
-      `<p class="muted">Data terkait tidak bisa dimuat (${esc(e.message)}). Ketuk bagian ini lagi untuk mencoba ulang.</p>`;
+    if (window.CMK !== key) return;
+    const el = document.getElementById('cml');
+    if (el)
+      el.innerHTML = `<p class="muted">Data terkait tidak bisa dimuat (${esc(e.message)}). Ketuk bagian ini lagi untuk mencoba ulang.</p>`;
   }
 }
 
 /**
  * Tampilkan satu kategori tautan terkait (paginasi 10 per muat) beserta cuplikan teksnya.
+ * Hanya mengganti isi #cml; header, tab, dan pilihan kategori tidak ikut dirender ulang.
  */
 function cmShow(c, off = 0) {
-  const { head, all, n, cats } = window.CM,
-    p = document.getElementById('panel');
+  const el = document.getElementById('cml');
+  if (!el || !window.CM) return;
+  const { all, ref } = window.CM,
+    sel = document.getElementById('cmsel');
+  if (sel && sel.value !== c) sel.value = c;
+  if (!off) document.getElementById('panel').scrollTop = 0;
   if (!c) {
-    p.innerHTML =
-      head +
-      `<div id="pt" style="margin:6px 0">${window.CMT || ''}</div>` +
-      '<p class="muted">Belum ada teks terkait untuk bagian ini. Ketuk bagian lain.</p>';
+    el.innerHTML = '<p class="muted">Belum ada teks terkait untuk bagian ini. Ketuk bagian lain.</p>';
     return;
   }
   if (c === '__web') {
-    p.innerHTML =
-      head +
-      `<div id="pt" style="margin:6px 0">${window.CMT || ''}</div><div>${cats.map((k) => `<button class="chip${k === c ? ' on' : ''}" data-c="${esc(k)}" onclick="cmShow(this.dataset.c)">${esc(lbl(k))}${k === '__web' ? '' : ' (' + n[k] + ')'}</button>`).join('')}</div><div id="wb"><p class="muted">Memuat artikel luar…</p></div>`;
-    webLoad(window.CM.ref);
+    el.innerHTML = '<div id="wb"><p class="muted">Memuat artikel luar…</p></div>';
+    webLoad(ref);
     return;
   }
   const list = all.filter((x) => x.category === c),
     show = list.slice(0, off + 10);
-  p.innerHTML =
-    head +
-    `<div id="pt" style="margin:6px 0">${window.CMT || ''}</div><div>${cats.map((k) => `<button class="chip${k === c ? ' on' : ''}" data-c="${esc(k)}" onclick="cmShow(this.dataset.c)">${esc(lbl(k))}${k === '__web' ? '' : ' (' + n[k] + ')'}</button>`).join('')}</div>` +
+  el.innerHTML =
     show
       .map(
         (x, k) =>
-          `<div class="cm"><b><a href="#/r/${enc(x.sourceRef)}">${esc(x.sourceRef)}</a></b><span id="cmt${k}" class="muted">Memuat…</span></div>`,
+          `<div class="cm" onclick="if(!event.target.closest('a'))this.classList.toggle('open')"><b><a href="#/r/${enc(x.sourceRef)}">${esc(x.sourceRef)}</a></b><span id="cmt${k}" class="muted">Memuat…</span></div>`,
       )
       .join('') +
     (list.length > show.length
@@ -206,10 +216,10 @@ function cmShow(c, off = 0) {
         tx = a ? flat(a.text).join(' ') : '';
       h = clean(tx.length > 1500 ? tx.slice(0, 1500).replace(/<[^>]*$/, '') + '…' : tx);
     } catch {}
-    const el = document.getElementById('cmt' + k);
-    if (el) {
-      el.className = '';
-      el.innerHTML =
+    const e = document.getElementById('cmt' + k);
+    if (e) {
+      e.className = '';
+      e.innerHTML =
         h || '<span class="muted">Teks tidak tersedia. Ketuk referensi untuk membukanya.</span>';
     }
   });

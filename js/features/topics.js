@@ -271,9 +271,9 @@ async function topicsFor(ref) {
   const el = document.getElementById('rt');
   if (!el) return;
   el.innerHTML =
-    '<span class="muted" style="font-size:13px">Memuat tema… (bisa agak lama untuk pasal yang panjang)</span>';
+    '<span class="muted" style="font-size:13px">Memuat topik… (bisa agak lama untuk pasal yang panjang)</span>';
   const h = await topicHtml(ref, 'pasal');
-  if (document.getElementById('rt') === el) el.innerHTML = h;
+  if (document.getElementById('rt') === el) el.innerHTML = typeof rtTopics === 'function' ? rtTopics(h) : h;
 }
 
 /**

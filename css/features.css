@@ -231,3 +231,314 @@ textarea {
   white-space: pre-wrap;
   line-height: 1.8;
 }
+
+/* ===== Panel komentar ayat: sheet (ponsel/tablet) dan panel samping (>= 1024px) =====
+   Hanya aktif bila panel berisi markup .cmp; panel kamus dan naskah kuno tetap seperti semula. */
+
+:root {
+  --cpw: clamp(360px, 32vw, 440px);
+}
+
+.seg {
+  scroll-margin-top: 120px;
+}
+
+.seg.sel {
+  background: color-mix(in srgb, var(--ac) 10%, transparent);
+  box-shadow: inset 3px 0 0 var(--ac);
+}
+
+#panel:has(> .cmp) {
+  padding: 0;
+  height: 52vh;
+  height: 52dvh;
+  max-height: none;
+  border-top: 1px solid var(--bd);
+  border-radius: 20px 20px 0 0;
+  overscroll-behavior: contain;
+  animation: cp-in 0.22s ease;
+}
+
+#panel.full:has(> .cmp) {
+  height: 84vh;
+  height: 84dvh;
+}
+
+@keyframes cp-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes cp-in-r {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.cmp-top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 0 14px 8px;
+  background: var(--card);
+  border-bottom: 1px solid var(--bd);
+}
+
+.cmp-grab {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  cursor: grab;
+}
+
+.cmp-grab::before {
+  content: '';
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--bd);
+}
+
+.cmp-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cmp-t {
+  flex: 1;
+  min-width: 0;
+}
+
+.cmp-t b {
+  display: block;
+  font-size: 17px;
+}
+
+.cmp-t span {
+  font-size: 12px;
+  color: var(--mut);
+}
+
+.cmp-t span:empty {
+  display: none;
+}
+
+.cmp-ib {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  color: var(--mut);
+}
+
+.cmp-share {
+  position: absolute;
+  right: 14px;
+  top: 62px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  min-width: 210px;
+  padding: 4px;
+  background: var(--card);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px #0003;
+}
+
+.cmp-share[hidden] {
+  display: none;
+}
+
+.cmp-share button {
+  border: 0;
+  background: transparent;
+  text-align: left;
+  min-height: 44px;
+}
+
+.cmp-tabs {
+  display: flex;
+  margin-top: 8px;
+}
+
+.cmp-tabs button {
+  flex: 1;
+  padding: 9px 4px;
+  font-size: 14px;
+  border-radius: 0;
+}
+
+.cmp-tabs button:first-child {
+  border-radius: 10px 0 0 10px;
+}
+
+.cmp-tabs button:last-child {
+  margin-left: -1px;
+  border-radius: 0 10px 10px 0;
+}
+
+.cmp-tabs button.on {
+  position: relative;
+  z-index: 1;
+  background: color-mix(in srgb, var(--ac) 12%, transparent);
+  color: var(--ac);
+  border-color: var(--ac);
+}
+
+.cmp-pane {
+  padding: 10px 14px 20px;
+}
+
+.cmp-l {
+  display: block;
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--mut);
+}
+
+.cmp-sel select {
+  width: 100%;
+  min-height: 44px;
+  font-size: 15px;
+}
+
+#cml {
+  margin-top: 10px;
+}
+
+.cmp .cm {
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.cmp .cm span {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cmp .cm.open span {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.cmp-note {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--mut);
+}
+
+.cmp-th {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 2px;
+  border-top: 1px solid var(--bd);
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.cmp-note + .cmp-th {
+  border-top: 0;
+}
+
+.cmp-th span {
+  flex: 1;
+}
+
+.cmp-th .ri {
+  color: var(--mut);
+}
+
+.cmp-th:hover span {
+  color: var(--ac);
+}
+
+@media (min-width: 1024px) {
+  #panel:has(> .cmp) {
+    left: auto;
+    right: 0;
+    top: var(--hh, 53px);
+    bottom: 0;
+    width: var(--cpw);
+    height: auto;
+    border-top: 0;
+    border-left: 1px solid var(--bd);
+    border-radius: 0;
+    box-shadow: -8px 0 24px #0002;
+    animation: cp-in-r 0.22s ease;
+  }
+
+  #panel.full:has(> .cmp) {
+    height: auto;
+  }
+
+  .cmp-grab {
+    display: none;
+  }
+
+  .cmp-top {
+    padding-top: 10px;
+  }
+
+  .cmp-share {
+    top: 56px;
+  }
+
+  body.cp-open main {
+    margin: 0 max(var(--cpw), calc((100vw - 860px) / 2)) 0 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #panel:has(> .cmp) {
+    animation: none;
+  }
+}
+
+/* ===== Header: tombol mode tampilan berupa ikon, menu menandai halaman aktif ===== */
+
+#th.th-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--fg);
+}
+
+#th.th-ic:hover {
+  background: color-mix(in srgb, var(--ac) 10%, transparent);
+}
+
+.menu a[aria-current='page'] {
+  color: var(--ac);
+  font-weight: 600;
+  border-bottom: 2px solid var(--ac);
+  padding-bottom: 3px;
+}

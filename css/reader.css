@@ -7,7 +7,7 @@
   gap: 6px;
   flex-wrap: wrap;
   position: sticky;
-  top: 53px;
+  top: var(--hh, 53px);
   background: var(--bg);
   padding: 8px 0;
   z-index: 4;
@@ -406,5 +406,227 @@
   .rtp,
   .rto {
     transition: none;
+  }
+}
+
+/* ===== Baris topik pasal, petunjuk, dan toolbar baca desktop ===== */
+
+#rt {
+  min-height: 34px;
+}
+
+.rtt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0;
+}
+
+.rtt-l {
+  font-size: 13px;
+  color: var(--mut);
+}
+
+.rtt-x {
+  display: none;
+}
+
+.rtt.open .rtt-x {
+  display: inline-block;
+}
+
+.rtt-m {
+  color: var(--ac);
+  border-color: var(--ac);
+}
+
+.rth {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+
+.rth-x {
+  padding: 2px 10px;
+  font-size: 12px;
+  border-radius: 12px;
+  color: var(--ac);
+  border-color: var(--ac);
+  background: transparent;
+}
+
+.rtn {
+  margin: 2px 0 0;
+  font-size: 13px;
+}
+
+@media (pointer: coarse) {
+  .h-fine {
+    display: none;
+  }
+}
+
+@media (pointer: fine) {
+  .h-coarse {
+    display: none;
+  }
+}
+
+/* Status tandai-dibaca pada tombol desktop (#rdb), diatur lewat data-done oleh reader-tools.js */
+#rdb[data-done='1'] {
+  background: color-mix(in srgb, #2e7d32 14%, transparent);
+  color: #2e7d32;
+  border-color: #2e7d32;
+}
+
+#rdb[data-done='1']::before {
+  content: '✓';
+  margin-right: 6px;
+  font-weight: 700;
+}
+
+[data-theme='dark'] #rdb[data-done='1'] {
+  color: #7bc67e;
+  border-color: #7bc67e;
+}
+
+.tb button:disabled,
+.tb .tbp:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (min-width: 769px) {
+  .tb {
+    align-items: center;
+    gap: 6px;
+    margin: 4px 0 6px;
+    border-bottom: 1px solid var(--bd);
+  }
+
+  .tb button,
+  .tb select,
+  .tb .tbp,
+  .tb .tbv {
+    height: 36px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  .tb button,
+  .tb .tbp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 12px;
+  }
+
+  /* 1) Mode tampilan: segmented control */
+  .tb > [data-m] {
+    order: 1;
+    margin-left: -1px;
+    border-radius: 0;
+  }
+
+  .tb > [data-m='both'] {
+    margin-left: 0;
+    border-radius: 8px 0 0 8px;
+  }
+
+  .tb > [data-m='en'] {
+    border-radius: 0 8px 8px 0;
+  }
+
+  .tb > [data-m].on {
+    position: relative;
+    z-index: 1;
+    background: color-mix(in srgb, var(--ac) 12%, transparent);
+    color: var(--ac);
+    border-color: var(--ac);
+  }
+
+  /* 2) Ukuran huruf: A− 22 A+ */
+  #tbdn {
+    order: 2;
+    margin-left: 8px;
+    border-radius: 8px 0 0 8px;
+  }
+
+  .tbv {
+    order: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    margin: 0 -1px;
+    border-top: 1px solid var(--bd);
+    border-bottom: 1px solid var(--bd);
+    font-size: 13px;
+    color: var(--mut);
+  }
+
+  #tbup {
+    order: 2;
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* 3) Terjemahan: pilihan ringkas satu baris */
+  .tb select {
+    order: 3;
+    width: auto;
+    max-width: 200px;
+    margin-left: 8px;
+    padding: 0 8px;
+    text-overflow: ellipsis;
+  }
+
+  /* 4) Aksi di sisi kanan, lalu panah pasal sebelumnya/berikutnya */
+  .tbn {
+    order: 4;
+    margin-left: auto;
+  }
+
+  #rdb {
+    order: 5;
+  }
+
+  .tbp {
+    order: 6;
+  }
+
+  .tbp-p {
+    margin-left: 8px;
+    border-radius: 8px 0 0 8px;
+  }
+
+  .tbp-n {
+    margin-left: -1px;
+    border-radius: 0 8px 8px 0;
+  }
+}
+
+/* Lebar sempit (jendela kecil, atau panel samping terbuka): label Naskah jadi ikon saja */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .tbn .tbl {
+    display: none;
+  }
+
+  .tb select {
+    max-width: 150px;
+  }
+}
+
+@media (min-width: 1101px) and (max-width: 1250px) {
+  body.cp-open .tbn .tbl {
+    display: none;
+  }
+
+  body.cp-open .tb select {
+    max-width: 150px;
   }
 }
