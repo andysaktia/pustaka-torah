@@ -21,19 +21,19 @@
       { label: 'Beranda', icon: 'home', href: '#/', match: /^(#\/?)?$/ },
       { label: 'Pustaka', icon: 'books', href: '#/p', match: /^#\/(p|c|b|r)(\/|$)/ },
       { label: 'Belajar', icon: 'route', href: '#/j', match: /^#\/j(\/|$)/ },
-      { label: 'Cari', icon: 'search', href: '#/s', match: /^#\/s(\/|$)/ }
+      { label: 'Hari ini', icon: 'calendar', href: '#/h', match: /^#\/h(\/|$)/ }
     ],
 
-    /* Isi sheet "Lainnya": semua item menu header yang tidak punya tab */
+    /* Isi sheet "Lainnya": item menu header yang tidak punya tab.
+       Pencarian tidak di sini: ia dibuka dari ikon kaca pembesar di header (search-overlay.js);
+       ganti tema juga ada di header. */
     more: [
-      { label: 'Hari ini', icon: 'calendar', href: '#/h', match: /^#\/h(\/|$)/ },
-      { label: 'Topik dan tema', icon: 'tree', href: '#/t', match: /^#\/t(\/|$)/ },
+      { label: 'Topik', icon: 'tree', href: '#/t', match: /^#\/t(\/|$)/ },
       { label: 'Terjemahan', icon: 'language', href: '#/g', match: /^#\/g(\/|$)/ },
       { label: 'Kamus', icon: 'book', href: '#/k', match: /^#\/k(\/|$)/ },
       { label: 'Rujukan', icon: 'quote', href: '#/f', match: /^#\/f(\/|$)/ },
       { label: 'Istilah', icon: 'list', href: '#/i', match: /^#\/i(\/|$)/ },
-      { label: 'Bacaan acak', icon: 'shuffle', href: '#/x', match: /^#\/x(\/|$)/ },
-      { label: 'Ganti tema', icon: 'sun', click: '#th' }
+      { label: 'Bacaan acak', icon: 'shuffle', href: '#/x', match: /^#\/x(\/|$)/ }
     ],
 
     moreLabel: 'Lainnya',

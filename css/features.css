@@ -542,3 +542,388 @@ textarea {
   border-bottom: 2px solid var(--ac);
   padding-bottom: 3px;
 }
+
+/* ===== Pencarian global (js/features/search-overlay.js) ===== */
+
+.hdr-act {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hdr-ib {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--fg);
+}
+
+.hdr-ib:hover {
+  background: color-mix(in srgb, var(--ac) 10%, transparent);
+}
+
+.so {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.so[hidden] {
+  display: none;
+}
+
+body.so-open {
+  overflow: hidden;
+}
+
+.so-box {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 8px 12px 24px;
+}
+
+.so-f {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 0;
+}
+
+.so-f input {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid var(--ac);
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+.so-f .so-b,
+.so-f .so-s {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+}
+
+.so-f .so-s {
+  color: var(--ac);
+}
+
+.so-h {
+  margin: 2px 4px 0;
+  font-size: 12px;
+  color: var(--mut);
+}
+
+.so-sec {
+  margin: 18px 4px 4px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mut);
+}
+
+.so-r {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 4px;
+  border-top: 1px solid var(--bd);
+  color: var(--fg);
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.so-sec + .so-r {
+  border-top: 0;
+}
+
+.so-r .ri {
+  flex: none;
+  color: var(--mut);
+}
+
+.so-r:hover span {
+  color: var(--ac);
+}
+
+/* Desktop: modal di atas halaman, bukan layar penuh */
+@media (min-width: 769px) {
+  .so {
+    padding-top: 12vh;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .so-box {
+    max-height: 70vh;
+    margin: 0 auto auto;
+    padding: 12px 16px 16px;
+    overflow-y: auto;
+    border-radius: 14px;
+    background: var(--bg);
+    box-shadow: 0 12px 40px #0004;
+  }
+
+  .so-f .so-b {
+    display: none;
+  }
+}
+
+/* ===== Halaman Bacaan hari ini (js/features/daily.js) ===== */
+
+.dbar {
+  position: sticky;
+  top: var(--hh, 53px);
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 4px;
+  padding: 8px 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--bd);
+}
+
+.dbt {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 10px;
+  color: var(--fg);
+}
+
+.ddate {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  background: var(--card);
+  font-size: 15px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ddate .ri {
+  flex: none;
+  color: var(--mut);
+}
+
+.ddate .dl-lg,
+.ddate .dl-sm {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ddate .dl-sm {
+  display: none;
+}
+
+.dtoday {
+  flex: none;
+  margin-left: auto;
+  padding: 1px 8px;
+  border: 1px solid var(--ac);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ac) 10%, transparent);
+  color: var(--ac);
+  font-size: 11px;
+  font-style: normal;
+}
+
+.dinp {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.dsel {
+  display: none;
+}
+
+.dmeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 28px;
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--mut);
+}
+
+.dback {
+  padding: 4px 12px;
+  border-color: var(--ac);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--ac);
+  font-size: 13px;
+}
+
+.dsec {
+  margin: 18px 0 8px;
+  font: 600 12px Figtree, sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mut);
+}
+
+.dhero {
+  grid-column: 1 / -1;
+  border-color: var(--ac);
+  background: color-mix(in srgb, var(--ac) 8%, var(--card));
+}
+
+.dcta {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--ac);
+}
+
+/* Sheet pengaturan jadwal (memakai gaya .rto / .rts dari reader.css, hanya tampil di ponsel) */
+.dseg {
+  display: flex;
+  margin: 0 0 14px;
+}
+
+.dseg button {
+  flex: 1;
+  min-height: 44px;
+  margin-left: -1px;
+  border-radius: 0;
+  font-size: 15px;
+}
+
+.dseg button:first-child {
+  margin-left: 0;
+  border-radius: 10px 0 0 10px;
+}
+
+.dseg button:last-child {
+  border-radius: 0 10px 10px 0;
+}
+
+.dseg button.on {
+  position: relative;
+  z-index: 1;
+  border-color: var(--ac);
+  background: color-mix(in srgb, var(--ac) 12%, transparent);
+  color: var(--ac);
+}
+
+.dsdone {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 12px;
+  border-color: var(--ac);
+  background: var(--ac);
+  color: var(--bg);
+}
+
+#dts .rts-row .ri {
+  color: var(--ac);
+}
+
+@media (max-width: 768px) {
+  .dgear {
+    display: inline-flex;
+  }
+
+  .ddate .dl-lg {
+    display: none;
+  }
+
+  .ddate .dl-sm {
+    display: inline;
+  }
+
+  .ddate {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ddate .ri {
+    display: none;
+  }
+}
+
+/* Desktop: satu baris -- tanggal di kiri, tradisi dan Haftarah di kanan */
+@media (min-width: 769px) {
+  .dgear,
+  .dsum {
+    display: none;
+  }
+
+  .ddate {
+    flex: 0 1 290px;
+  }
+
+  .dsel {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+  }
+
+  .dsel select {
+    height: 44px;
+    padding: 0 12px;
+  }
+
+  .dmeta:not(:has(.dback)) {
+    display: none;
+  }
+
+  .dmeta {
+    justify-content: flex-start;
+  }
+
+  .dgw {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dgw .dhero {
+    grid-column: auto;
+  }
+
+  .dgd {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
