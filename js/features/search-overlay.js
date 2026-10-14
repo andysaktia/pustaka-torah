@@ -10,7 +10,8 @@
   if (window.PustakaSearch) return;
 
   var IC = {
-    search: '<svg class="ri" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M21 21l-6-6"/></svg>',
+    search:
+      '<svg class="ri" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="M21 21l-6-6"/></svg>',
     back: '<svg class="ri" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>',
     hist: '<svg class="ri" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3 2"/></svg>',
   };
@@ -29,9 +30,13 @@
     box.setAttribute('aria-label', 'Cari');
     box.innerHTML =
       '<div class="so-box"><form class="so-f" role="search">' +
-      '<button type="button" class="so-b" aria-label="Tutup pencarian">' + IC.back + '</button>' +
+      '<button type="button" class="so-b" aria-label="Tutup pencarian">' +
+      IC.back +
+      '</button>' +
       '<input id="soq" type="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Kitab, ayat, atau kata Ibrani" aria-label="Cari">' +
-      '<button type="submit" class="so-s" aria-label="Cari">' + IC.search + '</button></form>' +
+      '<button type="submit" class="so-s" aria-label="Cari">' +
+      IC.search +
+      '</button></form>' +
       '<p class="so-h">Contoh: Genesis 1:1, Berakhot 2a, shalom</p><div id="sor"></div></div>';
     input = box.querySelector('#soq');
     // Klik latar (desktop) menutup; klik di dalam kotak tidak
@@ -55,7 +60,15 @@
         h
           .slice(0, 8)
           .map(function (r) {
-            return '<a class="so-r" href="#/r/' + enc(r) + '">' + IC.hist + '<span>' + esc(r) + '</span></a>';
+            return (
+              '<a class="so-r" href="#/r/' +
+              enc(r) +
+              '">' +
+              IC.hist +
+              '<span>' +
+              esc(r) +
+              '</span></a>'
+            );
           })
           .join('')
       : '';

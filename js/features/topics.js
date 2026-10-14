@@ -273,7 +273,8 @@ async function topicsFor(ref) {
   el.innerHTML =
     '<span class="muted" style="font-size:13px">Memuat topik… (bisa agak lama untuk pasal yang panjang)</span>';
   const h = await topicHtml(ref, 'pasal');
-  if (document.getElementById('rt') === el) el.innerHTML = typeof rtTopics === 'function' ? rtTopics(h) : h;
+  if (document.getElementById('rt') === el)
+    el.innerHTML = typeof rtTopics === 'function' ? rtTopics(h) : h;
 }
 
 /**

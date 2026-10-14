@@ -187,7 +187,8 @@ function cmShow(c, off = 0) {
   if (sel && sel.value !== c) sel.value = c;
   if (!off) document.getElementById('panel').scrollTop = 0;
   if (!c) {
-    el.innerHTML = '<p class="muted">Belum ada teks terkait untuk bagian ini. Ketuk bagian lain.</p>';
+    el.innerHTML =
+      '<p class="muted">Belum ada teks terkait untuk bagian ini. Ketuk bagian lain.</p>';
     return;
   }
   if (c === '__web') {

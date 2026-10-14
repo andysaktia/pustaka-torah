@@ -92,13 +92,22 @@ function dSheetBody() {
   const cus = S.cus || '';
   return (
     '<div class="rt-grab"></div><p class="rts-h">Pengaturan jadwal</p><p class="rts-l">Tradisi</p>' +
-    '<div class="dseg"><button type="button" class="' + (S.dia === 0 ? 'on' : '') + '" onclick="dSet(\'dia\',0)">Israel</button>' +
-    '<button type="button" class="' + (S.dia === 0 ? '' : 'on') + '" onclick="dSet(\'dia\',1)">Diaspora</button></div>' +
+    '<div class="dseg"><button type="button" class="' +
+    (S.dia === 0 ? 'on' : '') +
+    '" onclick="dSet(\'dia\',0)">Israel</button>' +
+    '<button type="button" class="' +
+    (S.dia === 0 ? '' : 'on') +
+    '" onclick="dSet(\'dia\',1)">Diaspora</button></div>' +
     '<p class="rts-l">Haftarah</p>' +
     DCUS.map(
       (o) =>
-        '<button type="button" class="rts-row" data-v="' + esc(o[0]) + '" onclick="dSet(\'cus\',this.dataset.v)"><span>' +
-        esc(o[1]) + '</span>' + (cus === o[0] ? RT_IC.ok : '') + '</button>',
+        '<button type="button" class="rts-row" data-v="' +
+        esc(o[0]) +
+        '" onclick="dSet(\'cus\',this.dataset.v)"><span>' +
+        esc(o[1]) +
+        '</span>' +
+        (cus === o[0] ? RT_IC.ok : '') +
+        '</button>',
     ).join('') +
     '<button type="button" class="dsdone" onclick="dClose()">Selesai</button>'
   );
@@ -170,12 +179,15 @@ async function hari(v) {
   const card = (x) => {
     const q = x.title || {},
       name = calKey(x) || q.en,
-      he = q.he && q.he !== q.en && !/^\d+$/.test(q.he) ? `<span class="he">${esc(q.he)}</span>` : '',
+      he =
+        q.he && q.he !== q.en && !/^\d+$/.test(q.he) ? `<span class="he">${esc(q.he)}</span>` : '',
       hero = isParasha(x);
     return `<a class="card${hero ? ' dhero' : ''}" href="#/r/${enc(x.ref)}"><b>${esc(name)}</b>${he}<small>${esc((x.displayValue && x.displayValue.en) || x.ref)}</small>${hero ? '<span class="dcta">Mulai membaca ›</span>' : ''}</a>`;
   };
   const sec = (label, list, cls) =>
-    list.length ? `<h3 class="dsec">${label}</h3><div class="grid ${cls}">${list.map(card).join('')}</div>` : '';
+    list.length
+      ? `<h3 class="dsec">${label}</h3><div class="grid ${cls}">${list.map(card).join('')}</div>`
+      : '';
   app.innerHTML = `<nav class="crumb"><a href="#/">Beranda</a></nav><h2>Bacaan hari ini <span class="he" style="color:var(--gold)">היום</span></h2>
  <p class="intro">Jadwal belajar harian dan mingguan dari Sefaria.</p>
  <div class="dbar"><button type="button" class="dbt" aria-label="Hari sebelumnya" onclick="location.hash='#/h/${sh(-1)}'">${RT_IC.bk}</button><label class="ddate">${DIC.cal}<span class="dl-lg">${esc(dLab(cur))}</span><span class="dl-sm">${esc(dLab(cur, true))}</span>${isT ? '<em class="dtoday">Hari ini</em>' : ''}<input type="date" class="dinp" aria-label="Pilih tanggal" value="${cur}" onclick="try{this.showPicker()}catch(e){}" onchange="if(this.value)location.hash='#/h/'+this.value"></label><button type="button" class="dbt" aria-label="Hari berikutnya" onclick="location.hash='#/h/${sh(1)}'">${RT_IC.gt}</button><button type="button" class="dbt dgear" aria-label="Pengaturan jadwal: ${esc(sum)}" aria-haspopup="dialog" onclick="dOpen()">${DIC.adj}</button>

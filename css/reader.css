@@ -198,7 +198,9 @@
     background: rgba(0, 0, 0, 0.4);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s, visibility 0s 0.2s;
+    transition:
+      opacity 0.2s,
+      visibility 0s 0.2s;
   }
 
   .rto.open {
@@ -216,7 +218,9 @@
     bottom: calc(var(--ptn-h, 0px) + env(safe-area-inset-bottom, 0px));
     background: var(--bg);
     visibility: hidden;
-    transition: transform 0.22s ease, visibility 0s 0.22s;
+    transition:
+      transform 0.22s ease,
+      visibility 0s 0.22s;
   }
 
   .rts.open,

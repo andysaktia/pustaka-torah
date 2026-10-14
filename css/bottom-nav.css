@@ -26,7 +26,7 @@
 }
 
 /* Jika aplikasi memakai tema manual, sesuaikan selektor ini dengan milik Anda */
-[data-theme="dark"],
+[data-theme='dark'],
 html.dark,
 body.dark {
   --ptn-bg: #1e2327;
@@ -38,7 +38,7 @@ body.dark {
   --ptn-overlay: rgba(0, 0, 0, 0.6);
 }
 
-[data-theme="light"] {
+[data-theme='light'] {
   --ptn-bg: #ffffff;
   --ptn-fg: #5f5e5a;
   --ptn-active: #2c3e8f;
@@ -112,12 +112,12 @@ body.dark {
     transition: background 0.15s;
   }
 
-  .ptn-tab[aria-current="page"],
+  .ptn-tab[aria-current='page'],
   .ptn-tab.is-active {
     color: var(--ptn-active);
   }
 
-  .ptn-tab[aria-current="page"] .ptn-ico,
+  .ptn-tab[aria-current='page'] .ptn-ico,
   .ptn-tab.is-active .ptn-ico {
     background: var(--ptn-active-bg);
   }
@@ -136,7 +136,9 @@ body.dark {
     background: var(--ptn-overlay);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s, visibility 0s 0.2s;
+    transition:
+      opacity 0.2s,
+      visibility 0s 0.2s;
   }
 
   .ptn-overlay.is-open {
@@ -160,7 +162,9 @@ body.dark {
     border-top: 0.5px solid var(--ptn-border);
     transform: translateY(110%);
     visibility: hidden;
-    transition: transform 0.22s ease, visibility 0s 0.22s;
+    transition:
+      transform 0.22s ease,
+      visibility 0s 0.22s;
   }
 
   .ptn-sheet.is-open {

@@ -17,15 +17,15 @@ const $lb = (id) => document.getElementById(id);
 
 const LBIC = {
   x: '<path d="M6 6l12 12M18 6L6 18"/>',
-  share: '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/>',
+  share:
+    '<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/>',
   dl: '<path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/>',
   copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
   dots: '<circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/>',
   ext: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   rst: '<path d="M4 4v5h5"/><path d="M4.5 9a8 8 0 1 1-1 5"/>',
 };
-const lbIco = (k) =>
-  '<svg class="ri" viewBox="0 0 24 24" aria-hidden="true">' + LBIC[k] + '</svg>';
+const lbIco = (k) => '<svg class="ri" viewBox="0 0 24 24" aria-hidden="true">' + LBIC[k] + '</svg>';
 
 /**
  * Terapkan zoom/geser ke gambar, perbarui persentase zoom, dan tampilkan chip zoom saat diperbesar.
@@ -74,7 +74,9 @@ function lbStatus(kind, msg, retry) {
   s.className = 'lbst ' + kind;
   s.innerHTML =
     (kind === 'busy' ? '<span class="lbsp" aria-hidden="true"></span>' : '') +
-    '<p>' + esc(msg) + '</p>' +
+    '<p>' +
+    esc(msg) +
+    '</p>' +
     (kind === 'err' && retry
       ? '<button type="button" class="lbbtn p" onclick="LB.retry&&LB.retry()">Coba lagi</button>'
       : '');
@@ -226,13 +228,25 @@ function lbInit() {
   d.setAttribute('aria-label', 'Penampil gambar');
   d.innerHTML =
     '<div class="lbside"><div class="lbhd"><div class="lbtt"><b id="lbt"></b><span id="lbsub"></span></div>' +
-    '<button id="lbc" type="button" class="lbclose" aria-label="Tutup" onclick="lbClose()">' + lbIco('x') + '</button></div>' +
+    '<button id="lbc" type="button" class="lbclose" aria-label="Tutup" onclick="lbClose()">' +
+    lbIco('x') +
+    '</button></div>' +
     '<div class="lbact" id="lbact"><div class="lbprim">' +
-    '<button id="lbsh" type="button" class="lbbtn p" hidden onclick="lbShare()">' + lbIco('share') + 'Bagikan</button>' +
-    '<a id="lbd" class="lbbtn" hidden>' + lbIco('dl') + 'Unduh</a>' +
-    '<button id="lbcp" type="button" class="lbbtn" hidden onclick="lbCopy()">' + lbIco('copy') + 'Salin gambar</button></div>' +
-    '<button id="lbmore" type="button" class="lbmore" aria-label="Aksi lain" aria-haspopup="true" aria-expanded="false" onclick="lbMenu()">' + lbIco('dots') + '</button>' +
-    '<div class="lbsec"><a id="lbo" class="lbbtn" target="_blank" rel="noopener">' + lbIco('ext') + 'Buka gambar asli</a>' +
+    '<button id="lbsh" type="button" class="lbbtn p" hidden onclick="lbShare()">' +
+    lbIco('share') +
+    'Bagikan</button>' +
+    '<a id="lbd" class="lbbtn" hidden>' +
+    lbIco('dl') +
+    'Unduh</a>' +
+    '<button id="lbcp" type="button" class="lbbtn" hidden onclick="lbCopy()">' +
+    lbIco('copy') +
+    'Salin gambar</button></div>' +
+    '<button id="lbmore" type="button" class="lbmore" aria-label="Aksi lain" aria-haspopup="true" aria-expanded="false" onclick="lbMenu()">' +
+    lbIco('dots') +
+    '</button>' +
+    '<div class="lbsec"><a id="lbo" class="lbbtn" target="_blank" rel="noopener">' +
+    lbIco('ext') +
+    'Buka gambar asli</a>' +
     '<button id="lbg" type="button" class="lbbtn" hidden onclick="lbRegen()">Gambar kosong? Buat sendiri</button></div></div></div>' +
     '<div id="lbs"><button class="lbn lbp" onclick="lbShow(LB.i-1)" aria-label="Gambar sebelumnya">‹</button><img id="lbi" alt="">' +
     '<button class="lbn lbx" onclick="lbShow(LB.i+1)" aria-label="Gambar berikutnya">›</button>' +
@@ -240,7 +254,9 @@ function lbInit() {
     '<div id="lbzc" class="lbzoom"><button type="button" class="lbzm" onclick="lbZ(1/1.4)" aria-label="Perkecil">−</button>' +
     '<button type="button" class="lbzp" onclick="lbReset()" aria-label="Kembalikan zoom"><span id="lbz">100%</span></button>' +
     '<button type="button" class="lbzpl" onclick="lbZ(1.4)" aria-label="Perbesar">＋</button>' +
-    '<button type="button" class="lbzr" onclick="lbReset()" aria-label="Reset zoom">' + lbIco('rst') + '</button></div></div>';
+    '<button type="button" class="lbzr" onclick="lbReset()" aria-label="Reset zoom">' +
+    lbIco('rst') +
+    '</button></div></div>';
   document.body.append(d);
   const s = d.querySelector('#lbs'),
     P = new Map(),
@@ -352,7 +368,9 @@ function lb(a) {
       ? 'Cubit atau ketuk dua kali untuk zoom · seret untuk menggeser' +
         (multi ? ' · geser kiri/kanan untuk berpindah' : '') +
         ' · geser ke bawah untuk menutup'
-      : 'Scroll untuk zoom · seret untuk menggeser' + (multi ? ' · ← → untuk berpindah' : '') + ' · Esc untuk menutup';
+      : 'Scroll untuk zoom · seret untuk menggeser' +
+        (multi ? ' · ← → untuk berpindah' : '') +
+        ' · Esc untuk menutup';
     m.style.opacity = 1;
     setTimeout(() => {
       m.style.opacity = 0;

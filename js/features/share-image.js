@@ -228,7 +228,9 @@ async function shareImg(i, sf, btn) {
     await shareImgRun(i, sf, btn);
     if (LB.busy) lbFail('Teks ayat ini tidak tersedia untuk dijadikan gambar.');
   } catch (e) {
-    lbFail('Gambar belum bisa dibuat. Periksa koneksi, lalu coba lagi.', () => shareImg(i, sf, btn));
+    lbFail('Gambar belum bisa dibuat. Periksa koneksi, lalu coba lagi.', () =>
+      shareImg(i, sf, btn),
+    );
   } finally {
     if (btn) {
       btn.disabled = false;
