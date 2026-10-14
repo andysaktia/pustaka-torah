@@ -216,13 +216,36 @@ const probeImg = (u) =>
   });
 
 /**
- * Buat/ambil gambar ayat (kartu sendiri atau gambar Sefaria) lalu buka di lightbox untuk diunduh/dibagikan.
+ * Pembungkus: buka lightbox dalam keadaan "menyiapkan gambar", jalankan pembuatan gambar, dan tampilkan
+ * kegagalan (dengan tombol "Coba lagi") bila gagal.
  */
 async function shareImg(i, sf, btn) {
   const S0 = window.SEG;
   if (!S0) return;
+  const t0 = btn && btn.textContent;
+  lbBusy(S0.ref + ':' + i);
+  try {
+    await shareImgRun(i, sf, btn);
+    if (LB.busy) lbFail('Teks ayat ini tidak tersedia untuk dijadikan gambar.');
+  } catch (e) {
+    lbFail('Gambar belum bisa dibuat. Periksa koneksi, lalu coba lagi.', () => shareImg(i, sf, btn));
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = t0;
+    }
+  }
+}
+
+/**
+ * Buat/ambil gambar ayat (kartu sendiri atau gambar Sefaria) lalu buka di lightbox untuk diunduh/dibagikan.
+ */
+async function shareImgRun(i, sf, btn) {
+  const S0 = window.SEG;
+  if (!S0) return;
   const ref = S0.ref + ':' + i,
     open = (it) => {
+      if (!LB.busy) return; // pengguna sudah menutup lightbox saat gambar dibuat
       window.MSL = [it];
       lb({ dataset: { i: 0 }, focus() {} });
     };

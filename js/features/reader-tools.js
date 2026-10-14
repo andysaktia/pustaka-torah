@@ -183,7 +183,7 @@ function rtInit() {
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (document.querySelector('.rts.open, .rtp.open')) rtClose();
-  else if (cpOpen()) cpClose();
+  else if (cpOpen() && !(document.getElementById('lb') && !document.getElementById('lb').hidden)) cpClose();
 });
 window.addEventListener('hashchange', rtClose);
 

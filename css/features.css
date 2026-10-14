@@ -107,99 +107,6 @@ ul {
   border-radius: 6px;
 }
 
-#lb {
-  position: fixed;
-  inset: 0;
-  background: #000000ee;
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  color: #fff;
-}
-
-.lbbar {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 8px 12px;
-  font-size: 14px;
-  background: #00000066;
-}
-
-.lbbar button,
-.lbbar .btn {
-  background: #ffffff22;
-  color: #fff;
-  border-color: #ffffff55;
-  padding: 7px 12px;
-}
-
-.lbbar button:hover,
-.lbbar .btn:hover {
-  background: #ffffff44;
-}
-
-#lbs {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-  touch-action: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: grab;
-}
-
-#lbi {
-  max-width: 100%;
-  max-height: 100%;
-  user-select: none;
-  -webkit-user-drag: none;
-  transform-origin: center;
-  transition: opacity 0.2s;
-}
-
-.lbn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  font-size: 26px;
-  line-height: 1;
-  padding: 0;
-  background: #00000099;
-  color: #fff;
-  border: 1px solid #ffffff66;
-  z-index: 2;
-}
-
-.lbn:hover {
-  background: #000000dd;
-}
-
-.lbp {
-  left: 10px;
-}
-
-.lbx {
-  right: 10px;
-}
-
-#lbm {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 10px;
-  text-align: center;
-  font-size: 13px;
-  color: #fffc;
-  pointer-events: none;
-  transition: opacity 0.6s;
-}
-
 pre {
   overflow: auto;
   font-size: 12px;
@@ -925,5 +832,462 @@ body.so-open {
 
   .dgd {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+/* ===== Penampil gambar (js/features/lightbox.js) =====
+   Ponsel: judul + X (kanan atas) di atas, gambar di tengah, aksi di bawah.
+   Desktop: gambar di kiri, panel aksi di kanan. Selalu di atas nav bawah dan panel. */
+
+#lb {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  background: #0b0e13;
+  color: #e8e6e3;
+}
+
+#lb[hidden],
+#lb [hidden] {
+  display: none !important;
+}
+
+#lb .lbside {
+  display: contents;
+}
+
+.lbhd {
+  order: 1;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 10px 8px 16px;
+}
+
+.lbtt {
+  flex: 1;
+  min-width: 0;
+}
+
+.lbtt b {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.lbtt span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #9a9890;
+}
+
+.lbclose {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e8e6e3;
+}
+
+.lbclose:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+#lbs {
+  order: 2;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+}
+
+#lbi {
+  max-width: 100%;
+  max-height: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform-origin: center;
+  transition: opacity 0.2s;
+}
+
+.lbn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid #ffffff66;
+  background: #00000099;
+  color: #fff;
+  font-size: 26px;
+  line-height: 1;
+  z-index: 2;
+}
+
+.lbn:hover {
+  background: #000000dd;
+}
+
+.lbp {
+  left: 10px;
+}
+
+.lbx {
+  right: 10px;
+}
+
+#lbm {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  text-align: center;
+  font-size: 13px;
+  color: #fffc;
+  pointer-events: none;
+  transition: opacity 0.6s;
+}
+
+/* Keadaan memuat/gagal */
+.lbst {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: #c9c7c1;
+  pointer-events: none;
+}
+
+.lbst.err {
+  pointer-events: auto;
+  background: #0b0e13;
+}
+
+.lbst p {
+  margin: 0;
+  max-width: 32ch;
+}
+
+.lbst .lbbtn {
+  flex: none;
+  min-width: 150px;
+}
+
+.lbst.busy {
+  animation: lb-fade 0.2s 0.3s both;
+}
+
+.lbsp {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #aab6f0;
+  border-radius: 50%;
+  animation: lb-spin 0.8s linear infinite;
+}
+
+@keyframes lb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes lb-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Zoom: chip "250% · Reset" saat diperbesar (ponsel); grup lengkap selalu tampil (desktop) */
+.lbzoom {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 2;
+  display: none;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(6px);
+}
+
+.lbzoom.on {
+  display: flex;
+}
+
+.lbzoom button {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #e8e6e3;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.lbzoom button:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.lbzoom .lbzm,
+.lbzoom .lbzpl,
+.lbzoom .lbzr {
+  display: none;
+}
+
+.lbzoom .lbzp::after {
+  content: ' · Reset';
+  opacity: 0.8;
+}
+
+/* Aksi */
+.lbact {
+  order: 3;
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px calc(14px + env(safe-area-inset-bottom, 0px));
+}
+
+.lbprim {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.lbbtn {
+  flex: 1;
+  min-height: 48px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 12px;
+  background: transparent;
+  color: #e8e6e3;
+  font: inherit;
+  font-size: 15px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.lbbtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.lbbtn.p {
+  border-color: #aab6f0;
+  background: #aab6f0;
+  color: #10142a;
+  font-weight: 600;
+}
+
+.lbbtn.p:hover {
+  background: #bcc6f4;
+}
+
+.lbmore {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #e8e6e3;
+}
+
+.lbsec {
+  display: none;
+  position: absolute;
+  right: 12px;
+  bottom: calc(100% - 4px);
+  flex-direction: column;
+  min-width: 230px;
+  padding: 4px;
+  background: #1c222b;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px #0008;
+}
+
+.lbact.menu .lbsec {
+  display: flex;
+}
+
+.lbsec .lbbtn {
+  flex: none;
+  justify-content: flex-start;
+  min-height: 46px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+#lb.noitem .lbprim,
+#lb.noitem .lbmore,
+#lb.noitem .lbsec {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.lbclose:focus-visible,
+.lbbtn:focus-visible,
+.lbmore:focus-visible,
+.lbzoom button:focus-visible,
+.lbn:focus-visible {
+  outline: 2px solid #aab6f0;
+  outline-offset: 2px;
+}
+
+@media (min-width: 769px) {
+  #lb {
+    flex-direction: row;
+  }
+
+  #lb .lbside {
+    order: 2;
+    flex: none;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    background: #10141a;
+  }
+
+  #lbs {
+    order: 1;
+  }
+
+  .lbhd {
+    padding: 16px 12px 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .lbtt b {
+    white-space: normal;
+  }
+
+  .lbact {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .lbprim {
+    flex: none;
+    flex-direction: column;
+  }
+
+  .lbbtn {
+    flex: none;
+    min-height: 42px;
+    font-size: 14px;
+  }
+
+  .lbmore {
+    display: none;
+  }
+
+  .lbsec {
+    position: static;
+    display: flex;
+    min-width: 0;
+    gap: 8px;
+    margin-top: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .lbsec .lbbtn {
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 12px;
+    min-height: 42px;
+  }
+
+  #lbm {
+    top: 12px;
+    bottom: auto;
+  }
+
+  .lbzoom {
+    display: flex;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .lbzoom .lbzm,
+  .lbzoom .lbzpl,
+  .lbzoom .lbzr {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lbzoom .lbzp {
+    min-width: 56px;
+  }
+
+  .lbzoom .lbzp::after {
+    content: '';
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lbsp {
+    animation-duration: 2s;
+  }
+
+  .lbst.busy {
+    animation: none;
   }
 }
