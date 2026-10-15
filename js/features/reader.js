@@ -87,7 +87,7 @@ async function read(ref) {
   const seg = Array.from(
     { length: n },
     (_, i) =>
-      `<div class="seg" data-i="${i + 1}" title="Ketuk untuk melihat komentar"><span class="n">${i + 1}</span>${H[i] ? `<div class="he" lang="he">${words(clean(H[i]))}</div>` : ''}${E[i] ? `<div class="en" lang="en">${clean(E[i])}${mtBtn(i + 1)}</div>${mtRes()}` : ''}</div>`,
+      `<div class="seg" data-i="${i + 1}" title="Ketuk untuk melihat komentar"><span class="n">${i + 1}${E[i] ? '' : mtBtnH(i + 1)}</span>${H[i] ? `<div class="he" lang="he">${words(clean(H[i]))}</div>` : ''}${E[i] ? `<div class="en" lang="en">${clean(E[i])}${mtBtn(i + 1)}</div>${mtRes()}` : H[i] ? mtRes() : ''}</div>`,
   ).join('');
   const nav = `<div class="pn">${d.prev ? `<a class="btn" href="#/r/${enc(d.prev)}">‹ ${esc(d.prev)}</a>` : '<span></span>'}${d.next ? `<a class="btn" href="#/r/${enc(d.next)}">${esc(d.next)} ›</a>` : ''}</div>`;
   const attr = [he, en]
@@ -105,7 +105,7 @@ async function read(ref) {
  <div id="rt"></div>
  <div class="tb"><button data-m="both" onclick="S.mode='both';apply()"><span class="lg">Ibrani + Terjemahan</span><span class="sm">Dua bahasa</span></button><button data-m="he" onclick="S.mode='he';apply()">Ibrani</button><button data-m="en" onclick="S.mode='en';apply()">Terjemahan</button>
  <button id="tbdn" class="tbz" aria-label="Perkecil huruf" title="Perkecil huruf" onclick="S.size=Math.max(14,S.size-2);apply();rtSize()">A−</button><span id="tbsz" class="tbv" aria-live="polite"></span><button id="tbup" class="tbz" aria-label="Perbesar huruf" title="Perbesar huruf" onclick="S.size=Math.min(34,S.size+2);apply();rtSize()">A+</button><button type="button" class="tbt" data-mt-hub title="Terjemahan mesin" onclick="mtHub(this)">${MT_IC}<span class="tbl">Terjemah</span></button><button class="tbn" title="Naskah kuno" onclick="ms(window.RF)">${RT_IC.sc}<span class="tbl">Naskah kuno</span></button>${pc ? rdBtn(pc) : ''}${sel}${d.prev ? `<a class="btn tbp tbp-p" href="#/r/${enc(d.prev)}" aria-label="Pasal sebelumnya" title="${esc(d.prev)}">${RT_IC.bk}</a>` : `<button class="btn tbp tbp-p" disabled aria-label="Tidak ada pasal sebelumnya">${RT_IC.bk}</button>`}${d.next ? `<a class="btn tbp tbp-n" href="#/r/${enc(d.next)}" aria-label="Pasal berikutnya" title="${esc(d.next)}">${RT_IC.gt}</a>` : `<button class="btn tbp tbp-n" disabled aria-label="Tidak ada pasal berikutnya">${RT_IC.gt}</button>`}</div>
- ${hint}${note ? `<p class="muted rtn">${note}</p>` : ''}${n ? '' : '<p class="muted">Teks tidak tersedia untuk bagian ini. Coba bagian lain dari daftar kitab.</p>'}
+ ${mtNote()}${hint}${note ? `<p class="muted rtn">${note}</p>` : ''}${n ? '' : '<p class="muted">Teks tidak tersedia untuk bagian ini. Coba bagian lain dari daftar kitab.</p>'}
  <div id="txt" class="text both">${seg}</div>${rt.end}${nav}<p class="attr">Sumber: Sefaria.org · ${attr}</p>${rt.tools}`;
   // Delegasi klik: kata Ibrani → kamus, bagian lain → komentar
   document.getElementById('txt').onclick = (e) => {

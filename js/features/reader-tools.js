@@ -309,6 +309,9 @@ function cpWrap(p) {
   cmp.innerHTML =
     '<div class="cmp-top"><div class="cmp-grab" onclick="cpFull()" aria-hidden="true"></div>' +
     '<div class="cmp-bar"><div class="cmp-t"><b></b><span></span></div>' +
+    (sub !== 'Naskah kuno' && typeof MT_IC !== 'undefined'
+      ? '<button type="button" class="cmp-ib" data-mt-dict aria-label="Terjemahkan ke Indonesia" title="Terjemahkan ke Indonesia" aria-pressed="false" onclick="mtDict(this)">' + MT_IC + '</button>'
+      : '') +
     '<button type="button" class="cmp-ib" aria-label="Tutup" onclick="cpClose()">' + RT_IC.x + '</button></div></div>' +
     '<div class="cmp-pane"></div>';
   const b = cmp.querySelector('.cmp-t b');

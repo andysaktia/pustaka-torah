@@ -168,12 +168,12 @@ function mtOut() {
 /* ---------- mesin ---------- */
 
 /** Satu permintaan ke MyMemory (<= MT_MAXB byte). Adaptor: ganti fungsi ini untuk mesin lain. */
-async function mtChunk(q, lang) {
+async function mtChunk(q, lang, to = 'id') {
   mtQCheck();
   if (MQ.finished) throw mtOut();
   const em = mtEmail(),
     res = await fetch(
-      `${MT_URL}?q=${encodeURIComponent(q)}&langpair=${lang}|id` + (em ? `&de=${encodeURIComponent(em)}` : ''),
+      `${MT_URL}?q=${encodeURIComponent(q)}&langpair=${lang}|${to}` + (em ? `&de=${encodeURIComponent(em)}` : ''),
     );
   if (res.status === 429) throw mtOut();
   if (!res.ok) throw new Error('Server terjemahan tidak merespons (' + res.status + ').');
@@ -191,22 +191,54 @@ async function mtChunk(q, lang) {
   return mtDecode(data.responseData.translatedText);
 }
 
-/** Terjemahkan teks ke Indonesia (dengan cache). lang: kode bahasa sumber ('en', 'he', ...). */
-async function mtText(text, lang) {
-  lang = lang || mtDet(text);
-  const clean = mtClean(text, lang),
-    key = lang + ':' + mtHash(clean),
+/** Jalur untuk teks Ibrani: 'direct' (Ibrani -> Indonesia, hemat) atau 'pivot' (lewat Inggris, ±2,5x kuota). */
+const mtPath = () => {
+  try {
+    return localStorage.getItem(MT_PFX + 'path') === 'pivot' ? 'pivot' : 'direct';
+  } catch {
+    return 'direct';
+  }
+};
+const mtPivot = (lang) => lang === 'he' && mtPath() === 'pivot';
+
+/** Satu lompatan terjemahan (from -> to) dengan pemecahan dan cache. Kunci 'xx:hash' dipertahankan untuk xx -> id. */
+async function mtRun(text, from, to) {
+  const clean = mtClean(text, from),
+    key = (to === 'id' ? from : from + '>' + to) + ':' + mtHash(clean),
     hit = mtCacheGet(key);
   if (hit) return hit;
   const parts = [];
-  for (const c of mtSplit(clean)) parts.push(await mtChunk(c, lang));
+  for (const c of mtSplit(clean)) parts.push(await mtChunk(c, from, to));
   const out = parts.join(' ');
   mtCacheSet(key, out);
   return out;
 }
 
-const mtCached = (text, lang) => !!mtCacheGet(lang + ':' + mtHash(mtClean(text, lang)));
-const mtCost = (text, lang) => (mtCached(text, lang) ? 0 : mtClean(text, lang).length);
+/** Terjemahkan teks ke Indonesia (dengan cache). lang: kode bahasa sumber ('en', 'he', ...). */
+async function mtText(text, lang) {
+  lang = lang || mtDet(text);
+  if (!mtPivot(lang)) return mtRun(text, lang, 'id');
+  const key = 'hep:' + mtHash(mtClean(text, lang)),
+    hit = mtCacheGet(key);
+  if (hit) return hit;
+  const out = await mtRun(await mtRun(text, 'he', 'en'), 'en', 'id');
+  mtCacheSet(key, out);
+  return out;
+}
+
+const mtOrigin = (lang) => (MT_LANG[lang] || lang) + (mtPivot(lang) ? ', lewat Inggris' : '');
+
+function mtCached(text, lang) {
+  const c = mtClean(text, lang);
+  return !!mtCacheGet(mtPivot(lang) ? 'hep:' + mtHash(c) : lang + ':' + mtHash(c));
+}
+
+/** Perkiraan karakter yang akan dipakai (0 bila sudah ada di cache). Jalur lewat Inggris ±2,5x. */
+function mtCost(text, lang) {
+  if (mtCached(text, lang)) return 0;
+  const n = mtClean(text, lang).length;
+  return mtPivot(lang) ? n + Math.round(n * 1.5) : n;
+}
 
 /* ---------- ikon per ayat ---------- */
 
@@ -215,17 +247,44 @@ function mtSrc(i) {
   const S0 = window.SEG;
   if (!S0) return null;
   const t = (S0.E[i - 1] || '').trim();
-  return t ? { text: t, lang: S0.lang || 'en' } : null;
+  if (t) return { text: t, lang: S0.lang || 'en' };
+  const h = (S0.H[i - 1] || '').trim();
+  return h ? { text: h, lang: 'he' } : null;
 }
 
-/** Tombol ikon di ujung baris terjemahan (dipanggil dari template reader.js). */
+/** Apakah pasal ini hanya punya teks Ibrani (tanpa terjemahan di Sefaria)? */
+function mtHebOnly() {
+  const S0 = window.SEG;
+  return !!(S0 && S0.H.some(Boolean) && !S0.E.some(Boolean));
+}
+
+/** Banner di atas pasal yang hanya tersedia dalam bahasa Ibrani. */
+function mtNote() {
+  if (!mtHebOnly()) return '';
+  return (
+    '<div class="mtnote" role="note"><b>Belum ada terjemahan di Sefaria</b>' +
+    '<p>Terjemahan mesin dari Ibrani tersedia, tetapi kurang akurat.</p>' +
+    '<button type="button" class="mtlink" data-mt-hub onclick="mtHub(this)">Terjemahkan pasal ini</button></div>'
+  );
+}
+
+const mtBtnHTML = (i, pre) =>
+  (pre || '') +
+  '<button type="button" class="tbtn" data-tv="' + i + '" aria-pressed="false" title="Terjemahkan ke Indonesia" aria-label="Terjemahkan ayat ' + i + ' ke Indonesia">' +
+  MT_IC + '</button>';
+
+/** Ikon di ujung baris terjemahan (ayat yang punya teks Inggris); dipanggil dari template reader.js. */
 function mtBtn(i) {
   const S0 = window.SEG;
-  if (!S0 || S0.lang === 'id' || !mtSrc(i)) return '';
-  return (
-    '\u2060<button type="button" class="tbtn" data-tv="' + i + '" aria-pressed="false" title="Terjemahkan ke Indonesia" aria-label="Terjemahkan ayat ' + i + ' ke Indonesia">' +
-    MT_IC + '</button>'
-  );
+  if (!S0 || S0.lang === 'id' || !(S0.E[i - 1] || '').trim()) return '';
+  return mtBtnHTML(i, '\u2060');
+}
+
+/** Ikon di kolom nomor untuk ayat yang hanya punya teks Ibrani. */
+function mtBtnH(i) {
+  const S0 = window.SEG;
+  if (!S0 || (S0.E[i - 1] || '').trim() || !mtSrc(i)) return '';
+  return mtBtnHTML(i, '');
 }
 
 /** Wadah hasil di bawah ayat/kartu. */
@@ -261,9 +320,21 @@ function mtShowErr(box, e, text) {
   }
 }
 
-function mtShowOK(box, out, label) {
+const mtLabel = (lang) =>
+  lang === 'he'
+    ? 'Terjemahan mesin dari ' + mtOrigin(lang) + '. Gunakan sebagai gambaran; teks Ibrani adalah rujukan.'
+    : 'Terjemahan mesin · dari ' + (MT_LANG[lang] || lang);
+
+function mtShowOK(box, out, label, src) {
+  const he = src && src.lang === 'he';
   box.className = 'trt';
   box.textContent = '';
+  if (he) {
+    const w = document.createElement('small');
+    w.className = 'trwn';
+    w.textContent = 'Kurang akurat';
+    box.append(w);
+  }
   const t = document.createElement('div');
   t.className = 'trtx';
   t.textContent = out;
@@ -271,6 +342,15 @@ function mtShowOK(box, out, label) {
   l.className = 'trl';
   l.textContent = label;
   box.append(t, l);
+  if (he) {
+    const a = document.createElement('a');
+    a.className = 'trgl';
+    a.href = mtGoogle(src.text);
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = 'Bandingkan di Google Terjemahan ↗';
+    box.append(a);
+  }
 }
 
 /** Terjemahkan ayat ke-i dan tampilkan di bawah ayat. Melempar galat agar proses pasal bisa berhenti. */
@@ -285,7 +365,7 @@ async function mtVerseRun(i) {
   }
   try {
     const out = await mtText(src.text, src.lang);
-    mtShowOK(box, out, 'Terjemahan mesin · dari ' + (MT_LANG[src.lang] || src.lang));
+    mtShowOK(box, out, mtLabel(src.lang), src);
     wrap.dataset.done = '1';
     wrap.classList.add('open');
     if (btn) {
@@ -311,6 +391,125 @@ function mtVerseToggle(b) {
     b.setAttribute('aria-pressed', open ? 'true' : 'false');
     mtBtnState(b, open ? 'Sembunyikan terjemahan' : 'Tampilkan terjemahan', 'done');
   } else mtVerseRun(i).catch(() => {});
+}
+
+/* ---------- panel kamus (arti kata) ---------- */
+
+/**
+ * Pilih baris teks Inggris dari isi panel untuk diterjemahkan: buang baris Ibrani, yang terlalu pendek,
+ * penanda "memuat", dan duplikat; batasi 14 baris / 1600 karakter agar kuota tidak habis.
+ */
+function mtPickLines(raw) {
+  const seen = new Set(),
+    lines = [];
+  let total = 0,
+    cut = false;
+  for (let l of String(raw).split(/\n+/)) {
+    l = l.replace(/\s+/g, ' ').replace(/^[\d.)\-•\s]+/, '').trim();
+    if (l.length < 4 || /^(memuat|loading)/i.test(l)) continue;
+    const he = (l.match(/[\u05D0-\u05EA]/g) || []).length,
+      la = (l.match(/[A-Za-z]/g) || []).length;
+    if (la < 3 || he >= la || seen.has(l)) continue;
+    if (l.length < 14 && /\d/.test(l)) continue; // rujukan pendek seperti "Gen 1:1"
+    seen.add(l);
+    if (lines.length >= 14) {
+      cut = true;
+      break;
+    }
+    if (total + l.length > 1600) {
+      // Baris panjang dipotong di batas kalimat terakhir yang masih muat, lalu berhenti
+      const room = 1600 - total;
+      if (room > 200) {
+        const part = l.slice(0, room),
+          k = part.lastIndexOf('. ');
+        lines.push(k > 100 ? part.slice(0, k + 1) : part);
+      }
+      cut = true;
+      break;
+    }
+    lines.push(l);
+    total += l.length;
+  }
+  return { lines, total, cut };
+}
+
+/** Teks isi panel (tanpa tombol dan hasil terjemah), dengan jeda baris di tiap blok. */
+function mtDictRaw(pane) {
+  const c = pane.cloneNode(true);
+  c.querySelectorAll('.mtdict, button, select, input, script, style, .trw').forEach((e) => e.remove());
+  c.querySelectorAll('p,li,div,dd,dt,tr,h1,h2,h3,h4,h5,h6,br').forEach((e) => e.append('\n'));
+  return c.textContent;
+}
+
+/** Terjemahkan arti di panel kamus (dan panel serupa) ke Indonesia; hasil tampil di bagian atas panel. */
+async function mtDict(btn) {
+  const pane = document.querySelector('#panel .cmp-pane');
+  if (!pane) return;
+  let box = pane.querySelector('.mtdict');
+  if (box && box.dataset.done === '1') {
+    box.hidden = !box.hidden;
+    btn.setAttribute('aria-pressed', box.hidden ? 'false' : 'true');
+    return;
+  }
+  if (!box) {
+    box = document.createElement('div');
+    box.setAttribute('aria-live', 'polite');
+    pane.prepend(box);
+  }
+  box.className = 'mtdict trt';
+  box.lang = 'id';
+  box.dir = 'ltr';
+  box.hidden = false;
+  box.textContent = '';
+  const { lines, cut } = mtPickLines(mtDictRaw(pane));
+  const note = (t) => {
+    const n = document.createElement('small');
+    n.className = 'trl';
+    n.textContent = t;
+    box.append(n);
+  };
+  if (!lines.length) {
+    note('Tidak ada teks berbahasa Inggris di panel ini yang bisa diterjemahkan. Blok teks tertentu lalu ketuk "Terjemahkan".');
+    return;
+  }
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>';
+  const ul = document.createElement('ul');
+  box.append(ul);
+  let done = 0,
+    err = null;
+  for (const l of lines) {
+    try {
+      const li = document.createElement('li');
+      li.textContent = await mtText(l, 'en');
+      ul.append(li);
+      done++;
+    } catch (e) {
+      err = e;
+      break;
+    }
+  }
+  note(
+    'Terjemahan mesin · ' + done + ' dari ' + lines.length + ' baris' +
+      (cut ? '; teks yang lebih panjang dipotong, blok bagian lain untuk menerjemahkannya' : '') + '.',
+  );
+  if (err) {
+    const w = document.createElement('div');
+    w.textContent = err.message;
+    box.append(w);
+    if (err.quota) {
+      const a = document.createElement('a');
+      a.href = mtGoogle(lines.slice(done).join('\n'));
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = 'Buka sisanya di Google Terjemahan ↗';
+      box.append(a);
+    }
+  }
+  box.dataset.done = done ? '1' : '0';
+  btn.disabled = false;
+  btn.innerHTML = MT_IC;
+  btn.setAttribute('aria-pressed', done ? 'true' : 'false');
 }
 
 /* ---------- kartu komentar ---------- */
@@ -344,7 +543,7 @@ async function mtCard(btn) {
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span> Menerjemahkan…';
   try {
-    mtShowOK(box, await mtText(text, lang), 'Terjemahan mesin · dari ' + (MT_LANG[lang] || lang));
+    mtShowOK(box, await mtText(text, lang), mtLabel(lang), { lang, text });
     wrap.dataset.done = '1';
     wrap.classList.add('open');
     btn.innerHTML = MT_IC + ' Sembunyikan terjemahan';
@@ -408,7 +607,11 @@ function mtFoot(sel, extra) {
   const left = Math.floor(mtRemain() / mtAvg());
   return (
     'Terjemahan mesin, bisa kurang akurat. Sisa kuota hari ini ±' + fmtN(left) + ' ayat.' +
-    (sel && sel.lang === 'he' ? ' Untuk hasil lebih baik, terjemahkan dari teks Inggris.' : '') +
+    (sel && sel.lang === 'he'
+      ? window.SEG && window.SEG.E.some(Boolean)
+        ? ' Untuk hasil lebih baik, terjemahkan dari teks Inggris.'
+        : ' Gunakan sebagai gambaran; teks Ibrani adalah rujukan.'
+      : '') +
     (extra || '') +
     (sel ? ' <a href="' + mtGoogle(sel.text) + '" target="_blank" rel="noopener">Buka di Google Terjemahan ↗</a>' : '')
   );
@@ -417,10 +620,10 @@ function mtFoot(sel, extra) {
 /** Hasil terjemah untuk teks yang dipilih. */
 async function mtShowSel(sel) {
   const tok = ++MT_TOK;
-  mtOpen('Terjemahan · ' + (MT_LANG[sel.lang] || sel.lang) + ' → Indonesia', sel.rect);
+  mtOpen('Terjemahan · ' + (mtPivot(sel.lang) ? 'Ibrani → Inggris → Indonesia' : (MT_LANG[sel.lang] || sel.lang) + ' → Indonesia'), sel.rect);
   const body = $mt('trpb'),
     foot = $mt('trpf');
-  body.innerHTML = '<p class="mtsrc"></p><div class="mtres" lang="id" dir="ltr" aria-live="polite"><span class="spin"></span></div><div class="mtact"></div>';
+  body.innerHTML = (sel.lang === 'he' ? '<small class="trwn">Kurang akurat</small>' : '') + '<p class="mtsrc"></p><div class="mtres" lang="id" dir="ltr" aria-live="polite"><span class="spin"></span></div><div class="mtact"></div>';
   body.querySelector('.mtsrc').textContent = '“' + (sel.text.length > 160 ? sel.text.slice(0, 160) + '…' : sel.text) + '”';
   foot.innerHTML = mtFoot(sel);
   mtReplace();
@@ -523,6 +726,35 @@ function mtChapInfo() {
   return { n, todo, cost };
 }
 
+/** Teks perkiraan biaya terjemahan satu pasal. */
+function mtCostText(info) {
+  if (!info.todo.length) return 'Semua ayat pada pasal ini sudah diterjemahkan.';
+  const enough = info.cost <= mtRemain();
+  return (
+    '±' + fmtN(info.cost) + ' karakter dari ' + info.todo.length + ' ayat · memakai ±' +
+    Math.round((info.cost / mtLimit()) * 100) + '% kuota hari ini' + (mtHebOnly() && mtPath() === 'pivot' ? ' (jalur lewat Inggris)' : '') + '.' +
+    (enough ? '' : ' <span class="mtwarn">Kuota hari ini tidak cukup untuk seluruh pasal; terjemahkan per ayat atau coba besok.</span>')
+  );
+}
+
+let MT_RUN = false;
+
+function mtCostUI() {
+  const c = $mt('mtcost'),
+    info = mtChapInfo();
+  if (!c || !info) return;
+  c.innerHTML = mtCostText(info);
+  const b = $mt('mtchap');
+  if (b && !MT_RUN) b.disabled = !info.todo.length || info.cost > mtRemain();
+}
+
+function mtSetPath(v) {
+  try {
+    localStorage.setItem(MT_PFX + 'path', v === 'pivot' ? 'pivot' : 'direct');
+  } catch {}
+  mtCostUI();
+}
+
 function mtHubHTML() {
   const info = mtChapInfo(),
     iconsOn = !document.body.classList.contains('mt-noicons');
@@ -530,16 +762,13 @@ function mtHubHTML() {
   if (info && info.n) {
     const rem = mtRemain(),
       enough = info.cost <= rem;
-    h += '<div class="mtsec"><b>Terjemahkan pasal ini</b><p id="mtcost">';
-    if (!info.todo.length) h += 'Semua ayat pada pasal ini sudah diterjemahkan.';
-    else
-      h +=
-        '±' + fmtN(info.cost) + ' karakter dari ' + info.todo.length + ' ayat · memakai ±' +
-        Math.round((info.cost / mtLimit()) * 100) + '% kuota hari ini.' +
-        (enough ? '' : ' <span class="mtwarn">Kuota hari ini tidak cukup untuk seluruh pasal; terjemahkan per ayat atau coba besok.</span>');
-    h += '</p><p id="mtprog" class="mtprog" hidden></p>';
+    h += '<div class="mtsec"><b>Terjemahkan pasal ini</b><p id="mtcost">' + mtCostText(info) + '</p><p id="mtprog" class="mtprog" hidden></p>';
     h += '<button type="button" class="mtbtn p" id="mtchap" onclick="mtChapter()"' + (!info.todo.length || !enough ? ' disabled' : '') + '>Terjemahkan pasal ini</button></div>';
   }
+  h +=
+    '<div class="mtsec"><b>Jalur untuk teks Ibrani</b>' +
+    '<label class="mtrd"><input type="radio" name="mtpath" value="direct"' + (mtPath() === 'direct' ? ' checked' : '') + ' onchange="mtSetPath(this.value)"><span>Langsung (Ibrani → Indonesia)<small>Hemat kuota.</small></span></label>' +
+    '<label class="mtrd"><input type="radio" name="mtpath" value="pivot"' + (mtPath() === 'pivot' ? ' checked' : '') + ' onchange="mtSetPath(this.value)"><span>Lewat Inggris (Ibrani → Inggris → Indonesia)<small>Mungkin lebih akurat; memakai ±2,5× kuota dan lebih lambat.</small></span></label></div>';
   h +=
     '<label class="mtsw"><input type="checkbox" id="mtico"' + (iconsOn ? ' checked' : '') + ' onchange="mtIcons(this.checked)"> <span>Tampilkan ikon terjemah di tiap ayat</span></label>';
   h +=
@@ -590,6 +819,7 @@ async function mtChapter() {
     btn = $mt('mtchap');
   if (!info || !info.todo.length || !btn) return;
   MT_STOP = false;
+  MT_RUN = true;
   btn.textContent = 'Hentikan';
   btn.onclick = () => {
     MT_STOP = true;
@@ -611,6 +841,7 @@ async function mtChapter() {
     }
     done++;
   }
+  MT_RUN = false;
   const p2 = $mt('mtprog');
   if (p2) {
     p2.hidden = false;

@@ -1916,3 +1916,128 @@ body.so-open {
     animation-duration: 2s;
   }
 }
+
+/* ===== Terjemahan mesin: teks hanya-Ibrani ===== */
+
+/* Mode "Ibrani" saja: sembunyikan hasil terjemahan; mode "Terjemahan": hasil menggantikan kolom kosong */
+.text.he .trw {
+  display: none;
+}
+
+/* Ikon untuk ayat tanpa terjemahan berada di kolom nomor, di bawah angka */
+.seg .n {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.seg .n .tbtn {
+  margin: 0;
+  vertical-align: baseline;
+}
+
+/* Banner di atas pasal yang hanya tersedia dalam bahasa Ibrani */
+.mtnote {
+  margin: 8px 0;
+  padding: 10px 12px;
+  border: 1px solid var(--ac);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ac) 8%, transparent);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.mtnote b {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 14px;
+}
+
+.mtnote p {
+  margin: 0 0 6px;
+  color: var(--mut);
+}
+
+.mtlink {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ac);
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Lencana kualitas dan tautan perbandingan pada hasil dari Ibrani */
+.trwn {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 0 8px;
+  border: 1px solid #a86400;
+  border-radius: 8px;
+  color: #a86400;
+  font: 11px Figtree, sans-serif;
+}
+
+[data-theme='dark'] .trwn {
+  border-color: #f0b429;
+  color: #f0b429;
+}
+
+.trgl {
+  display: block;
+  margin-top: 4px;
+  color: var(--ac);
+  font: 12px Figtree, sans-serif;
+  text-decoration: underline;
+}
+
+/* Pilihan jalur terjemah Ibrani di hub */
+.mtrd {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.mtrd input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  padding: 0;
+  accent-color: var(--ac);
+}
+
+.mtrd small {
+  display: block;
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--mut);
+}
+
+/* Hasil terjemah arti di panel kamus */
+.mtdict {
+  margin: 0 0 12px;
+}
+
+.mtdict[hidden] {
+  display: none;
+}
+
+.mtdict ul {
+  margin: 0 0 6px;
+  padding-left: 18px;
+}
+
+.mtdict li {
+  margin: 0 0 6px;
+}
+
+.cmp-ib[aria-pressed='true'] {
+  color: var(--ac);
+}
