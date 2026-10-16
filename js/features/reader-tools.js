@@ -20,12 +20,30 @@ var RT_IC = {
 };
 
 var RT_LANG = {
-  indonesian: 'Indonesia', english: 'Inggris', french: 'Prancis', german: 'Jerman',
-  portuguese: 'Portugis', spanish: 'Spanyol', russian: 'Rusia', italian: 'Italia',
-  arabic: 'Arab', yiddish: 'Yiddish', ladino: 'Ladino', persian: 'Persia',
-  polish: 'Polandia', dutch: 'Belanda', hungarian: 'Hungaria', hebrew: 'Ibrani',
-  chinese: 'Mandarin', turkish: 'Turki', catalan: 'Katalan', greek: 'Yunani',
-  japanese: 'Jepang', korean: 'Korea', swedish: 'Swedia', esperanto: 'Esperanto',
+  indonesian: 'Indonesia',
+  english: 'Inggris',
+  french: 'Prancis',
+  german: 'Jerman',
+  portuguese: 'Portugis',
+  spanish: 'Spanyol',
+  russian: 'Rusia',
+  italian: 'Italia',
+  arabic: 'Arab',
+  yiddish: 'Yiddish',
+  ladino: 'Ladino',
+  persian: 'Persia',
+  polish: 'Polandia',
+  dutch: 'Belanda',
+  hungarian: 'Hungaria',
+  hebrew: 'Ibrani',
+  chinese: 'Mandarin',
+  turkish: 'Turki',
+  catalan: 'Katalan',
+  greek: 'Yunani',
+  japanese: 'Jepang',
+  korean: 'Korea',
+  swedish: 'Swedia',
+  esperanto: 'Esperanto',
 };
 
 var RT_MO = null;
@@ -44,9 +62,13 @@ function rtMarkup(trs, pc) {
   const acts =
     '<span class="rt-acts">' +
     (pc
-      ? '<button id="rdi" class="rt-ib" type="button" aria-pressed="false" aria-label="Tandai sudah dibaca" onclick="toggleRead()">' + RT_IC.ck + '</button>'
+      ? '<button id="rdi" class="rt-ib" type="button" aria-pressed="false" aria-label="Tandai sudah dibaca" onclick="toggleRead()">' +
+        RT_IC.ck +
+        '</button>'
       : '') +
-    '<button class="rt-ib" type="button" aria-label="Tampilan teks" aria-haspopup="dialog" onclick="rtOpen()">' + RT_IC.aa + '</button></span>';
+    '<button class="rt-ib" type="button" aria-label="Tampilan teks" aria-haspopup="dialog" onclick="rtOpen()">' +
+    RT_IC.aa +
+    '</button></span>';
   const end = pc
     ? '<div class="rt-end"><button id="rde" type="button" onclick="toggleRead()">Tandai sudah dibaca</button></div>'
     : '';
@@ -58,12 +80,22 @@ function rtMarkup(trs, pc) {
     '<span class="rts-pv" lang="he">בְּרֵאשִׁית</span><span id="rts-sz" class="rts-sz"></span>' +
     '<button type="button" aria-label="Perbesar huruf" onclick="S.size=Math.min(34,S.size+2);apply();rtSize()">A+</button></div>' +
     (trs && trs.length
-      ? '<button type="button" class="rts-row" onclick="rtPick()"><span>Terjemahan</span><span class="v">' + esc(cur) + '</span>' + RT_IC.gt + '</button>'
+      ? '<button type="button" class="rts-row" onclick="rtPick()"><span>Terjemahan</span><span class="v">' +
+        esc(cur) +
+        '</span>' +
+        RT_IC.gt +
+        '</button>'
       : '') +
     (typeof mtPct === 'function'
-      ? '<button type="button" class="rts-row" data-mt-hub onclick="rtClose();mtHub()"><span>Terjemahan mesin</span><span class="v">Kuota ' + mtPct() + '%</span>' + RT_IC.gt + '</button>'
+      ? '<button type="button" class="rts-row" data-mt-hub onclick="rtClose();mtHub()"><span>Terjemahan mesin</span><span class="v">Kuota ' +
+        mtPct() +
+        '%</span>' +
+        RT_IC.gt +
+        '</button>'
       : '') +
-    '<button type="button" class="rts-row" onclick="rtClose();ms(window.RF)"><span>Naskah kuno</span>' + RT_IC.gt + '</button></div>' +
+    '<button type="button" class="rts-row" onclick="rtClose();ms(window.RF)"><span>Naskah kuno</span>' +
+    RT_IC.gt +
+    '</button></div>' +
     '<div id="rtp" class="rtp" role="dialog" aria-modal="true" aria-label="Pilih terjemahan"></div>';
   return { acts, end, tools };
 }
@@ -118,15 +150,26 @@ function rtPick() {
     g[f].push(v);
   });
   const opt = (c, label) =>
-    '<button type="button" class="rtp-o' + (S.tr === c ? ' on' : '') + '" data-c="' + esc(c) + '" onclick="rtSet(this.dataset.c)"><span>' +
-    esc(label) + '</span>' + (S.tr === c ? RT_IC.ok : '') + '</button>';
+    '<button type="button" class="rtp-o' +
+    (S.tr === c ? ' on' : '') +
+    '" data-c="' +
+    esc(c) +
+    '" onclick="rtSet(this.dataset.c)"><span>' +
+    esc(label) +
+    '</span>' +
+    (S.tr === c ? RT_IC.ok : '') +
+    '</button>';
   p.innerHTML =
-    '<div class="rtp-h"><button type="button" class="rt-ib" aria-label="Kembali" onclick="rtBack()">' + RT_IC.bk + '</button><b>Pilih terjemahan</b></div>' +
+    '<div class="rtp-h"><button type="button" class="rt-ib" aria-label="Kembali" onclick="rtBack()">' +
+    RT_IC.bk +
+    '</button><b>Pilih terjemahan</b></div>' +
     opt('', 'Terjemahan bawaan') +
     order
       .map(
         (f) =>
-          '<div class="rtp-g">' + esc(RT_LANG[f] || f.charAt(0).toUpperCase() + f.slice(1)) + '</div>' +
+          '<div class="rtp-g">' +
+          esc(RT_LANG[f] || f.charAt(0).toUpperCase() + f.slice(1)) +
+          '</div>' +
           g[f].map((v) => opt(f + '|' + v.versionTitle, rtLbl(v.versionTitle))).join(''),
       )
       .join('');
@@ -186,10 +229,10 @@ function rtInit() {
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (document.querySelector('.rts.open, .rtp.open')) rtClose();
-  else if (cpOpen() && !(document.getElementById('lb') && !document.getElementById('lb').hidden)) cpClose();
+  else if (cpOpen() && !(document.getElementById('lb') && !document.getElementById('lb').hidden))
+    cpClose();
 });
 window.addEventListener('hashchange', rtClose);
-
 
 /* ===== Panel komentar ayat ===== */
 
@@ -203,13 +246,27 @@ function cpShell(r, i) {
   const n = Number(i);
   return (
     '<div class="cmp"><div class="cmp-top"><div class="cmp-grab" onclick="cpFull()" aria-hidden="true"></div>' +
-    '<div class="cmp-bar"><div class="cmp-t"><b>' + esc(r) + ':' + n + '</b><span>Terkait ayat ini</span></div>' +
-    '<button type="button" class="cmp-ib" id="cpshb" aria-label="Bagikan" aria-haspopup="true" aria-expanded="false" onclick="cpShare()">' + RT_IC.sh + '</button>' +
-    '<button type="button" class="cmp-ib" aria-label="Tutup" onclick="cpClose()">' + RT_IC.x + '</button></div>' +
+    '<div class="cmp-bar"><div class="cmp-t"><b>' +
+    esc(r) +
+    ':' +
+    n +
+    '</b><span>Terkait ayat ini</span></div>' +
+    '<button type="button" class="cmp-ib" id="cpshb" aria-label="Bagikan" aria-haspopup="true" aria-expanded="false" onclick="cpShare()">' +
+    RT_IC.sh +
+    '</button>' +
+    '<button type="button" class="cmp-ib" aria-label="Tutup" onclick="cpClose()">' +
+    RT_IC.x +
+    '</button></div>' +
     '<div class="cmp-share" id="cpsh" hidden>' +
-    '<button type="button" onclick="shareImg(' + n + ')">Bagikan sebagai gambar</button>' +
-    '<button type="button" onclick="shareImg(' + n + ",'english',this)\">Gambar Sefaria: Inggris</button>" +
-    '<button type="button" onclick="shareImg(' + n + ",'hebrew',this)\">Gambar Sefaria: Ibrani</button></div>" +
+    '<button type="button" onclick="shareImg(' +
+    n +
+    ')">Bagikan sebagai gambar</button>' +
+    '<button type="button" onclick="shareImg(' +
+    n +
+    ",'english',this)\">Gambar Sefaria: Inggris</button>" +
+    '<button type="button" onclick="shareImg(' +
+    n +
+    ",'hebrew',this)\">Gambar Sefaria: Ibrani</button></div>" +
     '<div class="cmp-tabs" role="tablist">' +
     '<button type="button" role="tab" id="cmp-tr" class="on" aria-selected="true" onclick="cpTab(\'r\')">Terkait</button>' +
     '<button type="button" role="tab" id="cmp-tt" aria-selected="false" onclick="cpTab(\'t\')">Topik</button></div></div>' +
@@ -244,7 +301,16 @@ function cpTopics(h) {
     e.innerHTML =
       '<p class="cmp-note">Ketuk topik untuk membuka halamannya.</p>' +
       links
-        .map((a) => '<a class="cmp-th" href="' + esc(a.getAttribute('href')) + '"><span>' + a.innerHTML + '</span>' + RT_IC.gt + '</a>')
+        .map(
+          (a) =>
+            '<a class="cmp-th" href="' +
+            esc(a.getAttribute('href')) +
+            '"><span>' +
+            a.innerHTML +
+            '</span>' +
+            RT_IC.gt +
+            '</a>',
+        )
         .join('');
   } else e.innerHTML = h;
   if (tab) tab.textContent = 'Topik' + (links.length ? ' (' + links.length + ')' : '');
@@ -310,9 +376,13 @@ function cpWrap(p) {
     '<div class="cmp-top"><div class="cmp-grab" onclick="cpFull()" aria-hidden="true"></div>' +
     '<div class="cmp-bar"><div class="cmp-t"><b></b><span></span></div>' +
     (sub !== 'Naskah kuno' && typeof MT_IC !== 'undefined'
-      ? '<button type="button" class="cmp-ib" data-mt-dict aria-label="Terjemahkan semua ke Indonesia" title="Terjemahkan semua ke Indonesia" aria-pressed="false" onclick="mtDict(this)">' + MT_IC + '</button>'
+      ? '<button type="button" class="cmp-ib" data-mt-dict aria-label="Terjemahkan semua ke Indonesia" title="Terjemahkan semua ke Indonesia" aria-pressed="false" onclick="mtDict(this)">' +
+        MT_IC +
+        '</button>'
       : '') +
-    '<button type="button" class="cmp-ib" aria-label="Tutup" onclick="cpClose()">' + RT_IC.x + '</button></div></div>' +
+    '<button type="button" class="cmp-ib" aria-label="Tutup" onclick="cpClose()">' +
+    RT_IC.x +
+    '</button></div></div>' +
     '<div class="cmp-pane"></div>';
   const b = cmp.querySelector('.cmp-t b');
   if (h) while (h.firstChild) b.appendChild(h.firstChild);
@@ -378,7 +448,6 @@ function cpSync() {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(set);
 })();
 
-
 /* ===== Baris topik pasal: 3 chip + "+n lagi" ===== */
 
 /** Ringkas keluaran topicHtml('pasal'); pesan galat/kosong diteruskan apa adanya. */
@@ -392,9 +461,22 @@ function rtTopics(h) {
   return (
     '<div class="rtt"><span class="rtt-l">Topik:</span>' +
     chips
-      .map((a, i) => '<a class="chip' + (i >= N ? ' rtt-x' : '') + '" href="' + esc(a.getAttribute('href')) + '">' + a.innerHTML + '</a>')
+      .map(
+        (a, i) =>
+          '<a class="chip' +
+          (i >= N ? ' rtt-x' : '') +
+          '" href="' +
+          esc(a.getAttribute('href')) +
+          '">' +
+          a.innerHTML +
+          '</a>',
+      )
       .join('') +
-    (hid > 0 ? '<button type="button" class="chip rtt-m" aria-expanded="false" onclick="rtTog(this)">+' + hid + ' lagi</button>' : '') +
+    (hid > 0
+      ? '<button type="button" class="chip rtt-m" aria-expanded="false" onclick="rtTog(this)">+' +
+        hid +
+        ' lagi</button>'
+      : '') +
     '</div>'
   );
 }

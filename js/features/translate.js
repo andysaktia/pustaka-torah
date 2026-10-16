@@ -20,8 +20,18 @@ const MT_ICX =
   '<svg class="ri" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 
 const MT_LANG = {
-  en: 'Inggris', he: 'Ibrani', fr: 'Prancis', de: 'Jerman', pt: 'Portugis', es: 'Spanyol',
-  ru: 'Rusia', it: 'Italia', ar: 'Arab', fa: 'Persia', pl: 'Polandia', yi: 'Yiddish',
+  en: 'Inggris',
+  he: 'Ibrani',
+  fr: 'Prancis',
+  de: 'Jerman',
+  pt: 'Portugis',
+  es: 'Spanyol',
+  ru: 'Rusia',
+  it: 'Italia',
+  ar: 'Arab',
+  fa: 'Persia',
+  pl: 'Polandia',
+  yi: 'Yiddish',
 };
 
 const $mt = (id) => document.getElementById(id);
@@ -83,7 +93,8 @@ function mtSplit(text) {
 }
 
 const mtGoogle = (text) =>
-  'https://translate.google.com/?sl=auto&tl=id&op=translate&text=' + encodeURIComponent(text.slice(0, 1800));
+  'https://translate.google.com/?sl=auto&tl=id&op=translate&text=' +
+  encodeURIComponent(text.slice(0, 1800));
 
 /* ---------- cache (maks. MT_CACHE_N entri, yang terlama dibuang) ---------- */
 
@@ -173,7 +184,8 @@ async function mtChunk(q, lang, to = 'id') {
   if (MQ.finished) throw mtOut();
   const em = mtEmail(),
     res = await fetch(
-      `${MT_URL}?q=${encodeURIComponent(q)}&langpair=${lang}|${to}` + (em ? `&de=${encodeURIComponent(em)}` : ''),
+      `${MT_URL}?q=${encodeURIComponent(q)}&langpair=${lang}|${to}` +
+        (em ? `&de=${encodeURIComponent(em)}` : ''),
     );
   if (res.status === 429) throw mtOut();
   if (!res.ok) throw new Error('Server terjemahan tidak merespons (' + res.status + ').');
@@ -184,7 +196,8 @@ async function mtChunk(q, lang, to = 'id') {
     /MYMEMORY WARNING/i.test((data.responseData && data.responseData.translatedText) || '')
   )
     throw mtOut();
-  if (Number(data.responseStatus) !== 200) throw new Error(data.responseDetails || 'Terjemahan gagal.');
+  if (Number(data.responseStatus) !== 200)
+    throw new Error(data.responseDetails || 'Terjemahan gagal.');
   MQ.used += q.length;
   MT_SEEN = true;
   mtQSave();
@@ -270,8 +283,13 @@ function mtNote() {
 
 const mtBtnHTML = (i, pre) =>
   (pre || '') +
-  '<button type="button" class="tbtn" data-tv="' + i + '" aria-pressed="false" title="Terjemahkan ke Indonesia" aria-label="Terjemahkan ayat ' + i + ' ke Indonesia">' +
-  MT_IC + '</button>';
+  '<button type="button" class="tbtn" data-tv="' +
+  i +
+  '" aria-pressed="false" title="Terjemahkan ke Indonesia" aria-label="Terjemahkan ayat ' +
+  i +
+  ' ke Indonesia">' +
+  MT_IC +
+  '</button>';
 
 /** Ikon di ujung baris terjemahan (ayat yang punya teks Inggris); dipanggil dari template reader.js. */
 function mtBtn(i) {
@@ -293,7 +311,14 @@ const mtRes = () =>
 
 function mtVerseEls(i) {
   const seg = document.querySelector('.seg[data-i="' + i + '"]');
-  return seg ? { seg, btn: seg.querySelector('.tbtn'), wrap: seg.querySelector('.trw'), box: seg.querySelector('.trt') } : null;
+  return seg
+    ? {
+        seg,
+        btn: seg.querySelector('.tbtn'),
+        wrap: seg.querySelector('.trw'),
+        box: seg.querySelector('.trt'),
+      }
+    : null;
 }
 
 function mtBtnState(btn, label, state, html) {
@@ -308,7 +333,8 @@ function mtShowErr(box, e, text) {
   box.className = 'trt error';
   box.textContent = '';
   const p = document.createElement('div');
-  p.textContent = (e && e.message ? e.message : 'Terjemahan gagal.') + ' Ketuk lagi untuk mencoba ulang.';
+  p.textContent =
+    (e && e.message ? e.message : 'Terjemahan gagal.') + ' Ketuk lagi untuk mencoba ulang.';
   box.append(p);
   if (e && e.quota) {
     const a = document.createElement('a');
@@ -322,7 +348,9 @@ function mtShowErr(box, e, text) {
 
 const mtLabel = (lang) =>
   lang === 'he'
-    ? 'Terjemahan mesin dari ' + mtOrigin(lang) + '. Gunakan sebagai gambaran; teks Ibrani adalah rujukan.'
+    ? 'Terjemahan mesin dari ' +
+      mtOrigin(lang) +
+      '. Gunakan sebagai gambaran; teks Ibrani adalah rujukan.'
     : 'Terjemahan mesin · dari ' + (MT_LANG[lang] || lang);
 
 function mtShowOK(box, out, label, src) {
@@ -405,7 +433,10 @@ function mtPickLines(raw) {
   let total = 0,
     cut = false;
   for (let l of String(raw).split(/\n+/)) {
-    l = l.replace(/\s+/g, ' ').replace(/^[\d.)\-•\s]+/, '').trim();
+    l = l
+      .replace(/\s+/g, ' ')
+      .replace(/^[\d.)\-•\s]+/, '')
+      .trim();
     if (l.length < 4 || /^(memuat|loading|tidak ada rincian)/i.test(l)) continue;
     const he = (l.match(/[\u05D0-\u05EA]/g) || []).length,
       la = (l.match(/[A-Za-z]/g) || []).length;
@@ -436,8 +467,12 @@ function mtPickLines(raw) {
 /** Teks isi panel (tanpa tombol dan hasil terjemah), dengan jeda baris di tiap blok. */
 function mtDictRaw(pane) {
   const c = pane.cloneNode(true);
-  c.querySelectorAll('.mtdict, button, select, input, script, style, .trw, .cm > b').forEach((e) => e.remove());
-  c.querySelectorAll('p,li,div,dd,dt,tr,h1,h2,h3,h4,h5,h6,br,ol,ul,dl').forEach((e) => e.append('\n'));
+  c.querySelectorAll('.mtdict, button, select, input, script, style, .trw, .cm > b').forEach((e) =>
+    e.remove(),
+  );
+  c.querySelectorAll('p,li,div,dd,dt,tr,h1,h2,h3,h4,h5,h6,br,ol,ul,dl').forEach((e) =>
+    e.append('\n'),
+  );
   c.querySelectorAll('ol,ul,dl').forEach((e) => e.prepend('\n'));
   return c.textContent;
 }
@@ -466,8 +501,13 @@ async function mtFillLines(box, lines, cut) {
   const n = document.createElement('small');
   n.className = 'trl';
   n.textContent =
-    'Terjemahan mesin · ' + done + ' dari ' + lines.length + ' baris' +
-    (cut ? '; teks yang lebih panjang dipotong, blok bagian lain untuk menerjemahkannya' : '') + '.';
+    'Terjemahan mesin · ' +
+    done +
+    ' dari ' +
+    lines.length +
+    ' baris' +
+    (cut ? '; teks yang lebih panjang dipotong, blok bagian lain untuk menerjemahkannya' : '') +
+    '.';
   box.append(n);
   if (err) {
     const w = document.createElement('div');
@@ -514,7 +554,9 @@ async function mtDict(btn) {
   if (!lines.length) {
     const n = document.createElement('small');
     n.className = 'trl';
-    n.textContent = /memuat/i.test(raw) ? 'Panel masih memuat. Coba lagi sebentar.' : 'Tidak ada teks berbahasa Inggris di panel ini yang bisa diterjemahkan. Blok teks tertentu lalu ketuk "Terjemahkan".';
+    n.textContent = /memuat/i.test(raw)
+      ? 'Panel masih memuat. Coba lagi sebentar.'
+      : 'Tidak ada teks berbahasa Inggris di panel ini yang bisa diterjemahkan. Blok teks tertentu lalu ketuk "Terjemahkan".';
     box.append(n);
     return;
   }
@@ -584,8 +626,13 @@ async function mtDictAll(btn, pane, blocks) {
   const n = document.createElement('small');
   n.className = 'trl';
   n.textContent =
-    'Terjemahan mesin · ' + done + ' dari ' + blocks.length + ' kamus' +
-    (left ? '. Sisanya (' + left + ') bisa diterjemahkan dengan tombol di tiap kamus' : '') + '.';
+    'Terjemahan mesin · ' +
+    done +
+    ' dari ' +
+    blocks.length +
+    ' kamus' +
+    (left ? '. Sisanya (' + left + ') bisa diterjemahkan dengan tombol di tiap kamus' : '') +
+    '.';
   note.append(n);
   btn.disabled = false;
   btn.innerHTML = MT_IC;
@@ -602,13 +649,17 @@ const mtLatinLen = (s) => (String(s).match(/[A-Za-z]/g) || []).length;
  */
 function mtDictBlocks(pane) {
   // Struktur lexicon.js: satu <div class="cm"> (berisi <ol> arti) per kamus, langsung di dalam panel
-  const ents = Array.from(pane.children).filter((k) => k.matches('.cm') && k.querySelector('ol, ul'));
+  const ents = Array.from(pane.children).filter(
+    (k) => k.matches('.cm') && k.querySelector('ol, ul'),
+  );
   if (ents.length) return ents;
   const skip = 'h1,h2,h3,h4,button,script,style,select,input,.mtdict,.trw,.trlk';
   const cands = [pane, ...pane.querySelectorAll('div,section,article,ul,ol,dl')];
   for (const c of cands) {
     if (c.closest('.mtdict, .trw')) continue;
-    const kids = Array.from(c.children).filter((k) => !k.matches(skip) && mtLatinLen(k.textContent) >= 50);
+    const kids = Array.from(c.children).filter(
+      (k) => !k.matches(skip) && mtLatinLen(k.textContent) >= 50,
+    );
     if (kids.length >= 2) return kids;
   }
   return [];
@@ -631,7 +682,12 @@ function mtDictInit(pane) {
     const cost = lines.reduce((a, l) => a + mtCost(l, 'en'), 0);
     blk.insertAdjacentHTML(
       'beforeend',
-      '<button type="button" class="trlk" data-mb>' + MT_IC + ' Terjemahkan' + (cost ? ' <small>±' + fmtN(cost) + ' kar.</small>' : '') + '</button>' + mtRes(),
+      '<button type="button" class="trlk" data-mb>' +
+        MT_IC +
+        ' Terjemahkan' +
+        (cost ? ' <small>±' + fmtN(cost) + ' kar.</small>' : '') +
+        '</button>' +
+        mtRes(),
     );
   }
 }
@@ -692,7 +748,12 @@ function mtCardInit(card) {
     cost = mtCost(text, lang);
   card.insertAdjacentHTML(
     'beforeend',
-    '<button type="button" class="trlk">' + MT_IC + ' Terjemahkan' + (cost ? ' <small>±' + fmtN(cost) + ' kar.</small>' : '') + '</button>' + mtRes(),
+    '<button type="button" class="trlk">' +
+      MT_IC +
+      ' Terjemahkan' +
+      (cost ? ' <small>±' + fmtN(cost) + ' kar.</small>' : '') +
+      '</button>' +
+      mtRes(),
   );
 }
 
@@ -739,7 +800,8 @@ function mtPlace(el, rect) {
   let left = rect.left + sx + rect.width / 2 - w / 2;
   left = Math.max(sx + 12, Math.min(left, sx + vw - w - 12));
   let top = rect.bottom + sy + 10;
-  if (rect.bottom + h + 20 > window.innerHeight && rect.top - h - 20 > 0) top = rect.top + sy - h - 10;
+  if (rect.bottom + h + 20 > window.innerHeight && rect.top - h - 20 > 0)
+    top = rect.top + sy - h - 10;
   el.style.left = left + 'px';
   el.style.top = top + 'px';
 }
@@ -773,25 +835,40 @@ const mtOpenNow = () => !!$mt('trp') && $mt('trp').classList.contains('open');
 function mtFoot(sel, extra) {
   const left = Math.floor(mtRemain() / mtAvg());
   return (
-    'Terjemahan mesin, bisa kurang akurat. Sisa kuota hari ini ±' + fmtN(left) + ' ayat.' +
+    'Terjemahan mesin, bisa kurang akurat. Sisa kuota hari ini ±' +
+    fmtN(left) +
+    ' ayat.' +
     (sel && sel.lang === 'he'
       ? window.SEG && window.SEG.E.some(Boolean)
         ? ' Untuk hasil lebih baik, terjemahkan dari teks Inggris.'
         : ' Gunakan sebagai gambaran; teks Ibrani adalah rujukan.'
       : '') +
     (extra || '') +
-    (sel ? ' <a href="' + mtGoogle(sel.text) + '" target="_blank" rel="noopener">Buka di Google Terjemahan ↗</a>' : '')
+    (sel
+      ? ' <a href="' +
+        mtGoogle(sel.text) +
+        '" target="_blank" rel="noopener">Buka di Google Terjemahan ↗</a>'
+      : '')
   );
 }
 
 /** Hasil terjemah untuk teks yang dipilih. */
 async function mtShowSel(sel) {
   const tok = ++MT_TOK;
-  mtOpen('Terjemahan · ' + (mtPivot(sel.lang) ? 'Ibrani → Inggris → Indonesia' : (MT_LANG[sel.lang] || sel.lang) + ' → Indonesia'), sel.rect);
+  mtOpen(
+    'Terjemahan · ' +
+      (mtPivot(sel.lang)
+        ? 'Ibrani → Inggris → Indonesia'
+        : (MT_LANG[sel.lang] || sel.lang) + ' → Indonesia'),
+    sel.rect,
+  );
   const body = $mt('trpb'),
     foot = $mt('trpf');
-  body.innerHTML = (sel.lang === 'he' ? '<small class="trwn">Kurang akurat</small>' : '') + '<p class="mtsrc"></p><div class="mtres" lang="id" dir="ltr" aria-live="polite"><span class="spin"></span></div><div class="mtact"></div>';
-  body.querySelector('.mtsrc').textContent = '“' + (sel.text.length > 160 ? sel.text.slice(0, 160) + '…' : sel.text) + '”';
+  body.innerHTML =
+    (sel.lang === 'he' ? '<small class="trwn">Kurang akurat</small>' : '') +
+    '<p class="mtsrc"></p><div class="mtres" lang="id" dir="ltr" aria-live="polite"><span class="spin"></span></div><div class="mtact"></div>';
+  body.querySelector('.mtsrc').textContent =
+    '“' + (sel.text.length > 160 ? sel.text.slice(0, 160) + '…' : sel.text) + '”';
   foot.innerHTML = mtFoot(sel);
   mtReplace();
   const res = body.querySelector('.mtres'),
@@ -818,7 +895,8 @@ async function mtShowSel(sel) {
     if (tok !== MT_TOK) return;
     res.className = 'mtres error';
     res.textContent = e.message;
-    act.innerHTML = '<button type="button" class="mtbtn p" id="mtretry">Coba lagi</button><button type="button" class="mtbtn" onclick="mtClose()">Tutup</button>';
+    act.innerHTML =
+      '<button type="button" class="mtbtn p" id="mtretry">Coba lagi</button><button type="button" class="mtbtn" onclick="mtClose()">Tutup</button>';
     $mt('mtretry').onclick = () => mtShowSel(sel);
   }
   foot.innerHTML = mtFoot(sel);
@@ -833,7 +911,9 @@ let MT_SELT = 0,
 function mtSelOK(node) {
   const el = node && (node.nodeType === 1 ? node : node.parentElement);
   if (!el || !el.closest('#app, #panel')) return false;
-  return !el.closest('.trw, .trt, #trp, .tb, .tbtn, .trlk, button, select, input, textarea, nav, .cmp-top, .rtt, .rth, .dbar');
+  return !el.closest(
+    '.trw, .trt, #trp, .tb, .tbtn, .trlk, button, select, input, textarea, nav, .cmp-top, .rtt, .rth, .dbar',
+  );
 }
 
 function mtSelRead() {
@@ -898,9 +978,18 @@ function mtCostText(info) {
   if (!info.todo.length) return 'Semua ayat pada pasal ini sudah diterjemahkan.';
   const enough = info.cost <= mtRemain();
   return (
-    '±' + fmtN(info.cost) + ' karakter dari ' + info.todo.length + ' ayat · memakai ±' +
-    Math.round((info.cost / mtLimit()) * 100) + '% kuota hari ini' + (mtHebOnly() && mtPath() === 'pivot' ? ' (jalur lewat Inggris)' : '') + '.' +
-    (enough ? '' : ' <span class="mtwarn">Kuota hari ini tidak cukup untuk seluruh pasal; terjemahkan per ayat atau coba besok.</span>')
+    '±' +
+    fmtN(info.cost) +
+    ' karakter dari ' +
+    info.todo.length +
+    ' ayat · memakai ±' +
+    Math.round((info.cost / mtLimit()) * 100) +
+    '% kuota hari ini' +
+    (mtHebOnly() && mtPath() === 'pivot' ? ' (jalur lewat Inggris)' : '') +
+    '.' +
+    (enough
+      ? ''
+      : ' <span class="mtwarn">Kuota hari ini tidak cukup untuk seluruh pasal; terjemahkan per ayat atau coba besok.</span>')
   );
 }
 
@@ -929,19 +1018,33 @@ function mtHubHTML() {
   if (info && info.n) {
     const rem = mtRemain(),
       enough = info.cost <= rem;
-    h += '<div class="mtsec"><b>Terjemahkan pasal ini</b><p id="mtcost">' + mtCostText(info) + '</p><p id="mtprog" class="mtprog" hidden></p>';
-    h += '<button type="button" class="mtbtn p" id="mtchap" onclick="mtChapter()"' + (!info.todo.length || !enough ? ' disabled' : '') + '>Terjemahkan pasal ini</button></div>';
+    h +=
+      '<div class="mtsec"><b>Terjemahkan pasal ini</b><p id="mtcost">' +
+      mtCostText(info) +
+      '</p><p id="mtprog" class="mtprog" hidden></p>';
+    h +=
+      '<button type="button" class="mtbtn p" id="mtchap" onclick="mtChapter()"' +
+      (!info.todo.length || !enough ? ' disabled' : '') +
+      '>Terjemahkan pasal ini</button></div>';
   }
   h +=
     '<div class="mtsec"><b>Jalur untuk teks Ibrani</b>' +
-    '<label class="mtrd"><input type="radio" name="mtpath" value="direct"' + (mtPath() === 'direct' ? ' checked' : '') + ' onchange="mtSetPath(this.value)"><span>Langsung (Ibrani → Indonesia)<small>Hemat kuota.</small></span></label>' +
-    '<label class="mtrd"><input type="radio" name="mtpath" value="pivot"' + (mtPath() === 'pivot' ? ' checked' : '') + ' onchange="mtSetPath(this.value)"><span>Lewat Inggris (Ibrani → Inggris → Indonesia)<small>Mungkin lebih akurat; memakai ±2,5× kuota dan lebih lambat.</small></span></label></div>';
+    '<label class="mtrd"><input type="radio" name="mtpath" value="direct"' +
+    (mtPath() === 'direct' ? ' checked' : '') +
+    ' onchange="mtSetPath(this.value)"><span>Langsung (Ibrani → Indonesia)<small>Hemat kuota.</small></span></label>' +
+    '<label class="mtrd"><input type="radio" name="mtpath" value="pivot"' +
+    (mtPath() === 'pivot' ? ' checked' : '') +
+    ' onchange="mtSetPath(this.value)"><span>Lewat Inggris (Ibrani → Inggris → Indonesia)<small>Mungkin lebih akurat; memakai ±2,5× kuota dan lebih lambat.</small></span></label></div>';
   h +=
-    '<label class="mtsw"><input type="checkbox" id="mtico"' + (iconsOn ? ' checked' : '') + ' onchange="mtIcons(this.checked)"> <span>Tampilkan ikon terjemah di tiap ayat</span></label>';
+    '<label class="mtsw"><input type="checkbox" id="mtico"' +
+    (iconsOn ? ' checked' : '') +
+    ' onchange="mtIcons(this.checked)"> <span>Tampilkan ikon terjemah di tiap ayat</span></label>';
   h +=
     '<div class="mtsec"><b>Kuota hari ini</b><div class="mtqb"><i id="mtqbar"></i></div><p id="mtqtx"></p></div>';
   h +=
-    '<div class="mtsec"><b>Email pribadi (opsional)</b><div class="mtem"><input type="email" id="mtem" autocomplete="email" placeholder="nama@contoh.com" value="' + esc(mtEmail()) + '"><button type="button" class="mtbtn" onclick="mtEmailSave()">Simpan</button></div>' +
+    '<div class="mtsec"><b>Email pribadi (opsional)</b><div class="mtem"><input type="email" id="mtem" autocomplete="email" placeholder="nama@contoh.com" value="' +
+    esc(mtEmail()) +
+    '"><button type="button" class="mtbtn" onclick="mtEmailSave()">Simpan</button></div>' +
     '<small>Menaikkan kuota harian MyMemory untuk perangkat ini (5.000 menjadi 50.000 karakter). Disimpan hanya di peramban ini.</small></div>';
   return h;
 }
@@ -949,7 +1052,17 @@ function mtHubHTML() {
 function mtHub(anchor) {
   let a = anchor && anchor.getBoundingClientRect ? anchor : document.querySelector('.tbt');
   if (!a || !a.offsetParent) a = $mt('mtq');
-  const r = a && !a.hidden ? a.getBoundingClientRect() : { left: window.innerWidth / 2, right: window.innerWidth / 2, top: 80, bottom: 80, width: 0, height: 0 };
+  const r =
+    a && !a.hidden
+      ? a.getBoundingClientRect()
+      : {
+          left: window.innerWidth / 2,
+          right: window.innerWidth / 2,
+          top: 80,
+          bottom: 80,
+          width: 0,
+          height: 0,
+        };
   mtPillHide();
   MT_TOK++;
   mtOpen('Terjemahan mesin', r);
@@ -1012,7 +1125,11 @@ async function mtChapter() {
   const p2 = $mt('mtprog');
   if (p2) {
     p2.hidden = false;
-    p2.textContent = MT_STOP ? 'Dihentikan: ' + done + ' ayat selesai.' : done === info.todo.length ? 'Selesai: ' + done + ' ayat diterjemahkan.' : 'Berhenti di ayat ke-' + (done + 1) + ' (kuota habis atau jaringan bermasalah).';
+    p2.textContent = MT_STOP
+      ? 'Dihentikan: ' + done + ' ayat selesai.'
+      : done === info.todo.length
+        ? 'Selesai: ' + done + ' ayat diterjemahkan.'
+        : 'Berhenti di ayat ke-' + (done + 1) + ' (kuota habis atau jaringan bermasalah).';
   }
   const b2 = $mt('mtchap');
   if (b2) {
@@ -1037,7 +1154,12 @@ function mtQUI() {
   const pct = mtPct(),
     level = pct === 0 ? 'out' : pct <= 15 ? 'low' : pct <= 40 ? 'warn' : 'ok',
     RING = 2 * Math.PI * 20,
-    label = level === 'out' ? 'Kuota terjemahan habis hari ini' : level === 'low' ? 'Kuota terjemahan hampir habis' : 'Kuota terjemahan: ' + pct + '% tersisa';
+    label =
+      level === 'out'
+        ? 'Kuota terjemahan habis hari ini'
+        : level === 'low'
+          ? 'Kuota terjemahan hampir habis'
+          : 'Kuota terjemahan: ' + pct + '% tersisa';
   q.dataset.level = level;
   $mt('mtqring').style.strokeDashoffset = RING * (1 - pct / 100);
   $mt('mtqv').textContent = pct + '%';
@@ -1067,7 +1189,13 @@ function mtQUI() {
     tx.innerHTML =
       level === 'out'
         ? '<strong>Kuota harian habis.</strong> Terjemahan baru bisa dicoba lagi besok; yang sudah pernah dibuka tetap tersedia dari peramban.'
-        : 'Terpakai <strong>' + fmtN(MQ.used) + '</strong> dari ' + fmtN(mtLimit()) + ' karakter · cukup untuk ±<strong>' + fmtN(Math.floor(mtRemain() / mtAvg())) + ' ayat</strong> lagi. Yang pernah dibuka diambil dari peramban tanpa memakai kuota. Angka ini perkiraan.';
+        : 'Terpakai <strong>' +
+          fmtN(MQ.used) +
+          '</strong> dari ' +
+          fmtN(mtLimit()) +
+          ' karakter · cukup untuk ±<strong>' +
+          fmtN(Math.floor(mtRemain() / mtAvg())) +
+          ' ayat</strong> lagi. Yang pernah dibuka diambil dari peramban tanpa memakai kuota. Angka ini perkiraan.';
 }
 
 /* ---------- inisialisasi ---------- */
@@ -1079,10 +1207,14 @@ function mtInit() {
   } catch {}
   const wrap = document.createElement('div');
   wrap.innerHTML =
-    '<button id="mtpill" type="button" class="mtpill" hidden>' + MT_IC + '<span>Terjemahkan</span><small></small></button>' +
+    '<button id="mtpill" type="button" class="mtpill" hidden>' +
+    MT_IC +
+    '<span>Terjemahkan</span><small></small></button>' +
     '<div id="trov" class="trov"></div>' +
     '<div id="trp" class="trp" role="dialog" aria-label="Terjemahan mesin"><div class="trp-grab" aria-hidden="true"></div>' +
-    '<div class="trp-h"><b id="trpt"></b><button type="button" class="trp-x" aria-label="Tutup" onclick="mtClose()">' + MT_ICX + '</button></div>' +
+    '<div class="trp-h"><b id="trpt"></b><button type="button" class="trp-x" aria-label="Tutup" onclick="mtClose()">' +
+    MT_ICX +
+    '</button></div>' +
     '<div id="trpb" class="trp-b"></div><div id="trpf" class="trp-f"></div></div>' +
     '<button id="mtq" type="button" class="mtq" hidden data-level="ok" aria-label="Kuota terjemahan"><svg class="mtqr" viewBox="0 0 48 48" aria-hidden="true"><circle class="trk" cx="24" cy="24" r="20"/><circle id="mtqring" class="bar" cx="24" cy="24" r="20"/></svg><span id="mtqv">100%</span></button>' +
     '<div id="mtqt" class="mtqt" role="status"></div>';
@@ -1107,7 +1239,8 @@ function mtInit() {
   });
   document.addEventListener('mousedown', (e) => {
     MT_DOWN = true;
-    if (mtOpenNow() && !mtMobile() && !e.target.closest('#trp, #mtpill, #mtq, [data-mt-hub]')) mtClose();
+    if (mtOpenNow() && !mtMobile() && !e.target.closest('#trp, #mtpill, #mtq, [data-mt-hub]'))
+      mtClose();
   });
   document.addEventListener('mouseup', () => {
     MT_DOWN = false;
