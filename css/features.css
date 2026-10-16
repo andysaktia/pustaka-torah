@@ -231,12 +231,12 @@ textarea {
   font-size: 17px;
 }
 
-.cmp-t span {
+.cmp-t > span {
   font-size: 12px;
   color: var(--mut);
 }
 
-.cmp-t span:empty {
+.cmp-t > span:empty {
   display: none;
 }
 
@@ -333,17 +333,20 @@ textarea {
   padding: 10px 12px;
   border: 1px solid var(--bd);
   border-radius: 10px;
+}
+
+#cml .cm {
   cursor: pointer;
 }
 
-.cmp .cm span {
+#cml .cm span {
   display: -webkit-box;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.cmp .cm.open span {
+#cml .cm.open span {
   display: block;
   -webkit-line-clamp: unset;
   overflow: visible;
@@ -705,9 +708,7 @@ body.so-open {
 
 .dsec {
   margin: 18px 0 8px;
-  font:
-    600 12px Figtree,
-    sans-serif;
+  font: 600 12px Figtree, sans-serif;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--mut);
@@ -1418,9 +1419,7 @@ body.so-open {
 .trl {
   display: block;
   margin-top: 4px;
-  font:
-    12px Figtree,
-    sans-serif;
+  font: 12px Figtree, sans-serif;
   color: var(--mut);
 }
 
@@ -1451,7 +1450,7 @@ body.so-open {
   opacity: 0.7;
 }
 
-.cmp .cm .spin {
+#cml .cm .spin {
   display: inline-block;
   overflow: visible;
   -webkit-line-clamp: unset;
@@ -1494,9 +1493,7 @@ body.so-open {
   border-radius: 999px;
   background: var(--ac);
   color: var(--bg);
-  font:
-    600 14px Figtree,
-    sans-serif;
+  font: 600 14px Figtree, sans-serif;
   box-shadow: 0 6px 18px #0004;
   cursor: pointer;
   user-select: none;
@@ -1808,9 +1805,7 @@ body.so-open {
 
 .mtq span {
   position: relative;
-  font:
-    600 11px Figtree,
-    sans-serif;
+  font: 600 11px Figtree, sans-serif;
 }
 
 .mtqt {
@@ -1843,9 +1838,7 @@ body.so-open {
     background: rgba(0, 0, 0, 0.4);
     opacity: 0;
     visibility: hidden;
-    transition:
-      opacity 0.2s,
-      visibility 0s 0.2s;
+    transition: opacity 0.2s, visibility 0s 0.2s;
   }
 
   .trov.open {
@@ -1871,9 +1864,7 @@ body.so-open {
     border-radius: 20px 20px 0 0;
     transform: translateY(110%);
     visibility: hidden;
-    transition:
-      transform 0.22s ease,
-      visibility 0s 0.22s;
+    transition: transform 0.22s ease, visibility 0s 0.22s;
   }
 
   .trp.open {
@@ -1989,9 +1980,7 @@ body.so-open {
   border: 1px solid #a86400;
   border-radius: 8px;
   color: #a86400;
-  font:
-    11px Figtree,
-    sans-serif;
+  font: 11px Figtree, sans-serif;
 }
 
 [data-theme='dark'] .trwn {
@@ -2003,9 +1992,7 @@ body.so-open {
   display: block;
   margin-top: 4px;
   color: var(--ac);
-  font:
-    12px Figtree,
-    sans-serif;
+  font: 12px Figtree, sans-serif;
   text-decoration: underline;
 }
 
