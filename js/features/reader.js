@@ -4,6 +4,28 @@
  */
 
 /**
+ * Ref asli per segmen untuk rentang (mis. 'Genesis 6:9-11:32'); null bila bukan rentang.
+ * Dipakai agar ketukan ayat mengirim ref valid ke Sefaria (bukan 'Genesis 6:9-11:32:3').
+ */
+function segRefs(d, n) {
+  const ref = d.ref || '',
+    vs = d.versions || [],
+    raw = (vs.find((v) => v.language === 'he') || vs[0] || {}).text;
+  let m = ref.match(/^(.+?) (\d+):(\d+)-(\d+):(\d+)$/); // lintas bab
+  if (m && Array.isArray(raw) && Array.isArray(raw[0])) {
+    const out = [];
+    raw.forEach((ch, ci) => {
+      const start = ci ? 1 : +m[3];
+      (ch || []).forEach((_, j) => out.push(m[1] + ' ' + (+m[2] + ci) + ':' + (start + j)));
+    });
+    return out;
+  }
+  m = ref.match(/^(.+?) (\d+):(\d+)-(\d+)$/); // satu bab, sebagian ayat
+  if (m) return Array.from({ length: n }, (_, j) => m[1] + ' ' + m[2] + ':' + (+m[3] + j));
+  return null;
+}
+
+/**
  * Layar baca: ambil teks Ibrani + terjemahan, render per segmen, atur navigasi, riwayat, dan atribusi lisensi.
  */
 async function read(ref) {
@@ -31,7 +53,8 @@ async function read(ref) {
     en = (d.versions || []).find((v) => v.language !== 'he');
   const H = he ? flat(he.text) : [],
     E = en ? flat(en.text) : [],
-    n = Math.max(H.length, E.length);
+    n = Math.max(H.length, E.length),
+    SR = segRefs(d, n);
   // Simpan posisi terakhir dan riwayat (dipakai 'Lanjutkan membaca' & rekomendasi tema)
   st.set('last', d.ref || ref);
   window.RF = d.ref || ref;
@@ -87,7 +110,7 @@ async function read(ref) {
   const seg = Array.from(
     { length: n },
     (_, i) =>
-      `<div class="seg" data-i="${i + 1}" title="Ketuk untuk melihat komentar"><span class="n">${i + 1}${E[i] ? '' : mtBtnH(i + 1)}</span>${H[i] ? `<div class="he" lang="he">${words(clean(H[i]))}</div>` : ''}${E[i] ? `<div class="en" lang="en">${clean(E[i])}${mtBtn(i + 1)}</div>${mtRes()}` : H[i] ? mtRes() : ''}</div>`,
+      `<div class="seg" data-i="${i + 1}"${SR && SR[i] ? ` data-r="${esc(SR[i])}"` : ''} title="Ketuk untuk melihat komentar"><span class="n">${i + 1}${E[i] ? '' : mtBtnH(i + 1)}</span>${H[i] ? `<div class="he" lang="he">${words(clean(H[i]))}</div>` : ''}${E[i] ? `<div class="en" lang="en">${clean(E[i])}${mtBtn(i + 1)}</div>${mtRes()}` : H[i] ? mtRes() : ''}</div>`,
   ).join('');
   const nav = `<div class="pn">${d.prev ? `<a class="btn" href="#/r/${enc(d.prev)}">‹ ${esc(d.prev)}</a>` : '<span></span>'}${d.next ? `<a class="btn" href="#/r/${enc(d.next)}">${esc(d.next)} ›</a>` : ''}</div>`;
   const attr = [he, en]
@@ -118,7 +141,7 @@ async function read(ref) {
       return;
     }
     const s = e.target.closest('.seg');
-    if (s) comments(d.ref || ref, s.dataset.i);
+    if (s) comments(d.ref || ref, s.dataset.i, s.dataset.r);
   };
   topicsFor(d.ref || ref);
   apply();
@@ -129,7 +152,7 @@ async function read(ref) {
  * Panel komentar & tautan terkait suatu ayat. Kerangka (header, tab, pilihan kategori) dibuat sekali
  * oleh cpShell() (reader-tools.js); hanya daftar kartu yang diperbarui saat kategori berganti.
  */
-async function comments(r, i) {
+async function comments(r, i, sr) {
   const p = document.getElementById('panel');
   p.hidden = false;
   p.innerHTML = cpShell(r, i);
@@ -137,14 +160,15 @@ async function comments(r, i) {
   cpMark(i);
   // Muat tema ayat di latar belakang sambil komentar dimuat
   window.CMT = '';
-  const key = (window.CMK = r + ':' + i);
+  const full = sr || r + ':' + i,
+    key = (window.CMK = full);
   topicHtml(key, 'ayat').then((h) => {
     if (window.CMK !== key) return;
     window.CMT = h;
     cpTopics(h);
   });
   try {
-    const ref = r + ':' + i;
+    const ref = full;
     let l,
       err = '';
     for (const u of ['/links/' + enc(ref) + '?with_text=0', '/related/' + enc(ref)]) {
