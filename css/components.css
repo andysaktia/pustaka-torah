@@ -99,3 +99,25 @@ h2 {
   color: var(--mut);
   line-height: 1.1;
 }
+
+/* Daftar chip yang dilipat: tombol '+N lagi' */
+.crest[hidden] {
+  display: none;
+}
+
+button.chip.cmore {
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--ac);
+  border-style: dashed;
+}
+
+button.chip.cmore:hover {
+  border-color: var(--ac);
+}
+
+button.chip.cmore:focus-visible {
+  outline: 2px solid var(--ac);
+  outline-offset: 2px;
+}

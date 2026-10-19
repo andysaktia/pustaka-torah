@@ -134,10 +134,10 @@ async function topikDetail(s) {
     ? Object.values(d.links).flatMap((v) => (Array.isArray(v) ? v : (v && v.links) || []))
     : [];
   const seen = new Set(),
-    rel = rl.filter((x) => x && x.topic && !seen.has(x.topic) && seen.add(x.topic)).slice(0, 14);
+    rel = rl.filter((x) => x && x.topic && !seen.has(x.topic) && seen.add(x.topic)).slice(0, 40);
   window.TR = { slug: s, rf, shown: 0 };
   app.innerHTML = `<nav class="crumb"><a href="#/">Beranda</a> › <a href="#/t">Topik</a></nav><h2>${esc(ti.en || s)} <span class="he" style="color:var(--gold)">${esc(ti.he)}</span></h2>${desc ? `<p class="intro">${clean(desc)}</p>` : ''}
- ${rel.length ? `<p><b>Tema terkait</b></p><p>${rel.map((x) => `<a class="chip" href="#/t/${enc(x.topic)}">${esc((x.title && (x.title.en || x.title)) || x.topic)}</a>`).join('')}</p>` : ''}
+ ${rel.length ? `<p><b>Tema terkait</b></p><p>${chipFold(rel.map((x) => `<a class="chip" href="#/t/${enc(x.topic)}">${esc((x.title && (x.title.en || x.title)) || x.topic)}</a>`), 12)}</p>` : ''}
  <div id="pg"></div>${rf.length ? '<p><button onclick="acakTema(this)">Acak dari tema ini</button></p>' : ''}<h3>Teks tentang tema ini</h3>${rf.length ? '<div id="tl"></div><div id="tb"></div>' : '<p class="muted">Belum ada daftar teks untuk tema ini.</p>'}`;
   if (rf.length) {
     tpMore((window.TS || {})[s] || 12);
@@ -217,7 +217,7 @@ async function topicHtml(ref, unit) {
         .sort((a, b) => pr(b) - pr(a))
         .map((x) => x.topic)
         .filter((s) => !seen.has(s) && seen.add(s))
-        .slice(0, 10);
+        .slice(0, 30);
     if (!L.length) {
       const raw = JSON.stringify(d && d.topics !== undefined ? d.topics : d) || '',
         empty = ['[]', '{}', 'null', ''].includes(raw);
@@ -243,10 +243,13 @@ async function topicHtml(ref, unit) {
     return (
       m('Tema di bagian ini:') +
       ' ' +
-      L.map(
-        (s) =>
-          `<a class="chip" href="#/t/${enc(s)}">${esc(tt[s] || s.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase()))}</a>`,
-      ).join('')
+      chipFold(
+        L.map(
+          (s) =>
+            `<a class="chip" href="#/t/${enc(s)}">${esc(tt[s] || s.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase()))}</a>`,
+        ),
+        10,
+      )
     );
   } catch (e) {
     return (
@@ -327,6 +330,30 @@ function slugsOf(d) {
 }
 
 /**
+ * Daftar chip yang dilipat: tampilkan `lim` pertama, sisanya lewat tombol '+N lagi'.
+ * Bila sisanya hanya 1-2 item, semua langsung ditampilkan (tombol '+1 lagi' tidak berguna).
+ */
+function chipFold(items, lim = 14) {
+  if (items.length <= lim + 2) return items.join('');
+  const id = 'cf' + (window.CFN = (window.CFN || 0) + 1);
+  return `<span id="${id}">${items.slice(0, lim).join('')}<span class="crest" hidden>${items.slice(lim).join('')}</span><button type="button" class="chip cmore" data-n="${items.length - lim}" aria-expanded="false" onclick="chipToggle('${id}')">+${items.length - lim} lagi</button></span>`;
+}
+
+/**
+ * Buka/tutup sisa chip pada daftar yang dibuat chipFold().
+ */
+function chipToggle(id) {
+  const w = document.getElementById(id);
+  if (!w) return;
+  const r = w.querySelector('.crest'),
+    b = w.querySelector('.cmore'),
+    open = r.hidden;
+  r.hidden = !open;
+  b.setAttribute('aria-expanded', open);
+  b.textContent = open ? 'Tampilkan lebih sedikit' : '+' + b.dataset.n + ' lagi';
+}
+
+/**
  * Rekomendasi tema dari riwayat baca (endpoint rekomendasi, fallback gabungan tema ref terakhir).
  */
 async function rekomen() {
@@ -370,12 +397,12 @@ async function rekomen() {
       });
       L = Object.keys(cnt)
         .sort((a, b) => cnt[b] - cnt[a])
-        .slice(0, 12);
+        .slice(0, 30);
     }
     const m = await ttMap();
     if (document.getElementById('rk') !== el) return;
     el.innerHTML = L.length
-      ? `<p>${L.map((s) => `<a class="chip" href="#/t/${enc(s)}">${esc(pretty(s, m))}</a>`).join('')}</p>${lokal ? '<p class="attr">Disusun dari tema bacaan terakhir Anda.</p>' : ''}`
+      ? `<p>${chipFold(L.map((s) => `<a class="chip" href="#/t/${enc(s)}">${esc(pretty(s, m))}</a>`))}</p>${lokal ? '<p class="attr">Disusun dari tema bacaan terakhir Anda.</p>' : ''}`
       : '<p class="muted">Belum ada rekomendasi untuk bacaan Anda. Coba baca beberapa teks lain, lalu buka halaman ini lagi.</p>';
   } catch (e) {
     if (document.getElementById('rk') === el)
@@ -450,10 +477,12 @@ async function peta(s) {
       ks = Object.keys(G),
       ti = (o) => tops[o] || pretty(o, m),
       chips = (a) =>
-        [...a]
-          .slice(0, 14)
-          .map((o) => `<a class="chip" href="#/t/${enc(o)}">${esc(ti(o))}</a>`)
-          .join('');
+        chipFold(
+          [...a]
+            .slice(0, 40)
+            .map((o) => `<a class="chip" href="#/t/${enc(o)}">${esc(ti(o))}</a>`),
+          10,
+        );
     const rest = Object.keys(tops).filter((o) => o !== s);
     el.innerHTML = ks.length
       ? `<h3>Peta tema</h3>${ks.map((k) => `<p style="margin:6px 0 2px"><b>${esc(k)}</b></p><p style="margin:0">${chips(G[k])}</p>`).join('')}`
