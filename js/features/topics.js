@@ -137,7 +137,17 @@ async function topikDetail(s) {
     rel = rl.filter((x) => x && x.topic && !seen.has(x.topic) && seen.add(x.topic)).slice(0, 40);
   window.TR = { slug: s, rf, shown: 0 };
   app.innerHTML = `<nav class="crumb"><a href="#/">Beranda</a> › <a href="#/t">Topik</a></nav><h2>${esc(ti.en || s)} <span class="he" style="color:var(--gold)">${esc(ti.he)}</span></h2>${desc ? `<p class="intro">${clean(desc)}</p>` : ''}
- ${rel.length ? `<p><b>Tema terkait</b></p><p>${chipFold(rel.map((x) => `<a class="chip" href="#/t/${enc(x.topic)}">${esc((x.title && (x.title.en || x.title)) || x.topic)}</a>`), 12)}</p>` : ''}
+ ${
+   rel.length
+     ? `<p><b>Tema terkait</b></p><p>${chipFold(
+         rel.map(
+           (x) =>
+             `<a class="chip" href="#/t/${enc(x.topic)}">${esc((x.title && (x.title.en || x.title)) || x.topic)}</a>`,
+         ),
+         12,
+       )}</p>`
+     : ''
+ }
  <div id="pg"></div>${rf.length ? '<p><button onclick="acakTema(this)">Acak dari tema ini</button></p>' : ''}<h3>Teks tentang tema ini</h3>${rf.length ? '<div id="tl"></div><div id="tb"></div>' : '<p class="muted">Belum ada daftar teks untuk tema ini.</p>'}`;
   if (rf.length) {
     tpMore((window.TS || {})[s] || 12);
@@ -478,9 +488,7 @@ async function peta(s) {
       ti = (o) => tops[o] || pretty(o, m),
       chips = (a) =>
         chipFold(
-          [...a]
-            .slice(0, 40)
-            .map((o) => `<a class="chip" href="#/t/${enc(o)}">${esc(ti(o))}</a>`),
+          [...a].slice(0, 40).map((o) => `<a class="chip" href="#/t/${enc(o)}">${esc(ti(o))}</a>`),
           10,
         );
     const rest = Object.keys(tops).filter((o) => o !== s);

@@ -16,8 +16,15 @@ main:has(.hm-top) {
 
 .hm-resume {
   grid-area: resume;
+}
+
+.hm-rc {
   padding: 16px;
   border-color: var(--ac);
+}
+
+.hm-dsk {
+  display: none;
 }
 
 .hm-today {
@@ -41,7 +48,10 @@ main:has(.hm-top) {
 }
 
 .hm-more {
-  font: 400 14px/1.2 Figtree, system-ui, sans-serif;
+  font:
+    400 14px/1.2 Figtree,
+    system-ui,
+    sans-serif;
   text-decoration: none;
 }
 
@@ -190,10 +200,43 @@ main:has(.hm-top) {
 }
 
 @media (min-width: 900px) {
+  /* Subjudul hero muat satu baris, tanpa satu kata menggantung */
+  main:has(.hm-top) .hero p {
+    max-width: none;
+  }
+
+  /* Kolom kanan (Hari ini) lebih lebar agar nilai panjang tidak membungkus;
+     baris kedua lentur (1fr) supaya tinggi kolom kanan = kolom kiri tanpa celah di tengah */
   .hm-top {
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    grid-template-rows: auto 1fr;
     align-items: start;
     grid-template-areas: 'resume today' 'doors today';
+  }
+
+  /* Judul "Lanjutkan membaca" tampil di atas kartu (sejajar dengan "Hari ini"); label di dalam kartu disembunyikan */
+  .hm-dsk {
+    display: flex;
+  }
+
+  .hm-rc .hm-lbl {
+    display: none;
+  }
+
+  /* Hari ini: kartu 2×2 setinggi sama, mengisi kolom hingga sejajar dengan dasar Pintu masuk */
+  .hm-today {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hm-today .hm-grid {
+    flex: 1;
+    grid-auto-rows: 1fr;
+  }
+
+  .hm-today > p {
+    margin: 12px 0 0;
   }
 
   .hm-steps {

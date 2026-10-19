@@ -67,7 +67,8 @@ async function home() {
       .join('') +
     '<a class="card" href="#/p"><b>Semua kategori ▸</b><small>Perpustakaan</small></a><a class="card" href="#/t"><b>Topik & tema ▸</b><small>Termasuk rekomendasi dari riwayat bacaan</small></a>';
   const tools = HOME_TOOLS.map(
-    ([ic, t, h]) => `<a class="card" href="${h}"><b><span aria-hidden="true">${ic}</span> ${esc(t)}</b></a>`,
+    ([ic, t, h]) =>
+      `<a class="card" href="${h}"><b><span aria-hidden="true">${ic}</span> ${esc(t)}</b></a>`,
   ).join('');
   const skel = '<div class="card hm-skel"></div>'.repeat(4);
 
@@ -75,7 +76,7 @@ async function home() {
  <p>Teks Ibrani berdampingan dengan terjemahan, lengkap dengan komentar klasik.</p>
  <form onsubmit="return go(this)"><input name="q" aria-label="Cari" placeholder="Cari kitab, ayat, atau kata (mis. Genesis 1:1, Berakhot 2a, love)"><button>Cari</button></form></section>
  <div class="hm-top">
-  <div class="card hm-resume">${resume}</div>
+  <div class="hm-resume"><h2 class="hm-h hm-dsk">${last ? 'Lanjutkan membaca' : 'Mulai dari sini'}</h2><div class="card hm-rc">${resume}</div></div>
   <aside class="hm-today"><h2 class="hm-h">Hari ini</h2>
    <div id="today" class="hm-grid" aria-live="polite">${skel}</div>
    <p><a class="btn hm-block" href="#/h">Semua bacaan hari ini</a></p></aside>
@@ -93,7 +94,9 @@ async function home() {
     })
     .catch(() => {
       const t = document.getElementById('today');
-      if (t) t.innerHTML = '<p class="hm-note hm-span">Bacaan hari ini belum bisa dimuat. Coba lagi nanti.</p>';
+      if (t)
+        t.innerHTML =
+          '<p class="hm-note hm-span">Bacaan hari ini belum bisa dimuat. Coba lagi nanti.</p>';
     });
 }
 
