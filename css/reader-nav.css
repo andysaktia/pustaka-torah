@@ -130,7 +130,7 @@ body:has(.ptn-sheet.is-open) .rn {
 /* Mobile sempit: jalur kosong (gutter) agar tab tidak menutupi teks */
 @media (max-width: 899px) {
   main:has(.rn) #txt {
-    margin-inline: 12px;
+    margin-inline: 14px;
   }
 }
 
@@ -384,5 +384,73 @@ body:has(.ptn-sheet.is-open) .rn {
     width: 0;
     height: 100%;
     background: var(--ac);
+  }
+}
+
+/* ===== Ponsel: bar ramping dengan tombol Aa, judul/topik dipangkas, kolom nomor ayat dipersempit ===== */
+
+.tb > .tb-aa {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Bar penuh lebar: segmented control + tombol Aa (sheet Tampilan teks), garis pemisah saat menempel */
+  .tb {
+    margin-inline: -16px;
+    padding-inline: 16px;
+  }
+
+  .tb > .tb-aa {
+    display: inline-flex;
+    margin-left: 8px;
+  }
+
+  .tb.is-stuck {
+    box-shadow:
+      0 1px 0 var(--bd),
+      0 6px 12px -6px rgba(0, 0, 0, 0.35);
+  }
+
+  .tb-pg {
+    height: 4px;
+  }
+
+  /* Judul: tag tahap disembunyikan (info ada di breadcrumb) agar ikon sejajar dengan judul */
+  .rt-h2 {
+    font-size: 22px;
+  }
+
+  .rt-h2 .tag {
+    display: none;
+  }
+
+  /* Topik: satu baris (2 chip + "+N lagi"), chip panjang dipotong dengan elipsis */
+  .rtt:not(.open) {
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .rtt:not(.open) .chip {
+    flex: 0 1 auto;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rtt:not(.open) .rtt-m,
+  .rtt:not(.open) .rtt-l {
+    flex: none;
+  }
+
+  /* Kolom nomor ayat lebih sempit: teks memakai lebar lebih banyak */
+  .seg {
+    grid-template-columns: 24px 1fr;
+  }
+
+  .seg > .n,
+  .n {
+    font-size: 12px;
   }
 }

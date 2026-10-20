@@ -495,7 +495,7 @@ function rtTopics(h) {
   const t = document.createElement('template');
   t.innerHTML = h;
   const chips = Array.from(t.content.querySelectorAll('a.chip')),
-    N = 3,
+    N = window.matchMedia('(max-width: 768px)').matches ? 2 : 3,
     hid = chips.length - N;
   if (!chips.length) return h;
   return (

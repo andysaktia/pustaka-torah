@@ -128,7 +128,7 @@ async function read(ref) {
  <h2 class="rt-h2">${esc(d.ref || ref)} <span class="he" style="color:var(--gold)">${esc(d.heRef)}</span>${stg(cat[0]) >= 0 ? `<span class="tag">${esc(dn(cat[0]))} · Tahap ${stg(cat[0]) + 1}</span>` : ''}${rt.acts}</h2>
  <div id="rt"></div>
  <div class="tb"><button data-m="both" onclick="S.mode='both';apply()"><span class="lg">Ibrani + Terjemahan</span><span class="sm">Dua bahasa</span></button><button data-m="he" onclick="S.mode='he';apply()">Ibrani</button><button data-m="en" onclick="S.mode='en';apply()">Terjemahan</button>
- <button id="tbdn" class="tbz" aria-label="Perkecil huruf" title="Perkecil huruf" onclick="S.size=Math.max(14,S.size-2);apply();rtSize()">A−</button><span id="tbsz" class="tbv" aria-live="polite"></span><button id="tbup" class="tbz" aria-label="Perbesar huruf" title="Perbesar huruf" onclick="S.size=Math.min(34,S.size+2);apply();rtSize()">A+</button><span id="tbpos" class="tb-pos"></span><button id="tbk" class="tbk" type="button" aria-haspopup="true" aria-expanded="false" onclick="tbMenu()">Alat <span aria-hidden="true">▾</span></button><div id="tbm" class="tbm" hidden><button type="button" class="tbt" data-mt-hub title="Terjemahan mesin" onclick="tbClose();mtHub(document.getElementById('tbk'))">${MT_IC}<span class="tbl">Terjemah</span></button><button class="tbn" title="Naskah kuno" onclick="tbClose();ms(window.RF)">${RT_IC.sc}<span class="tbl">Naskah kuno</span></button>${pc ? rdBtn(pc) : ''}</div>${sel}${d.prev ? `<a class="btn tbp tbp-p" href="#/r/${enc(d.prev)}" aria-label="Pasal sebelumnya" title="${esc(d.prev)}">${RT_IC.bk}</a>` : `<button class="btn tbp tbp-p" disabled aria-label="Tidak ada pasal sebelumnya">${RT_IC.bk}</button>`}${d.next ? `<a class="btn tbp tbp-n" href="#/r/${enc(d.next)}" aria-label="Pasal berikutnya" title="${esc(d.next)}">${RT_IC.gt}</a>` : `<button class="btn tbp tbp-n" disabled aria-label="Tidak ada pasal berikutnya">${RT_IC.gt}</button>`}</div>
+ <button id="tbdn" class="tbz" aria-label="Perkecil huruf" title="Perkecil huruf" onclick="S.size=Math.max(14,S.size-2);apply();rtSize()">A−</button><span id="tbsz" class="tbv" aria-live="polite"></span><button id="tbup" class="tbz" aria-label="Perbesar huruf" title="Perbesar huruf" onclick="S.size=Math.min(34,S.size+2);apply();rtSize()">A+</button><span id="tbpos" class="tb-pos"></span><button id="tbk" class="tbk" type="button" aria-haspopup="true" aria-expanded="false" onclick="tbMenu()">Alat <span aria-hidden="true">▾</span></button><div id="tbm" class="tbm" hidden><button type="button" class="tbt" data-mt-hub title="Terjemahan mesin" onclick="tbClose();mtHub(document.getElementById('tbk'))">${MT_IC}<span class="tbl">Terjemah</span></button><button class="tbn" title="Naskah kuno" onclick="tbClose();ms(window.RF)">${RT_IC.sc}<span class="tbl">Naskah kuno</span></button>${pc ? rdBtn(pc) : ''}</div>${sel}${d.prev ? `<a class="btn tbp tbp-p" href="#/r/${enc(d.prev)}" aria-label="Pasal sebelumnya" title="${esc(d.prev)}">${RT_IC.bk}</a>` : `<button class="btn tbp tbp-p" disabled aria-label="Tidak ada pasal sebelumnya">${RT_IC.bk}</button>`}${d.next ? `<a class="btn tbp tbp-n" href="#/r/${enc(d.next)}" aria-label="Pasal berikutnya" title="${esc(d.next)}">${RT_IC.gt}</a>` : `<button class="btn tbp tbp-n" disabled aria-label="Tidak ada pasal berikutnya">${RT_IC.gt}</button>`}<button type="button" class="rt-ib tb-aa" aria-label="Tampilan teks" aria-haspopup="dialog" onclick="rtOpen()">${RT_IC.aa}</button></div>
  ${mtNote()}${hint}${note ? `<p class="muted rtn">${note}</p>` : ''}${n ? '' : '<p class="muted">Teks tidak tersedia untuk bagian ini. Coba bagian lain dari daftar kitab.</p>'}
  <div id="txt" class="text both">${seg}</div>${rt.end}${nav}<p class="attr">Sumber: Sefaria.org · ${attr}</p>${rt.tools}${rn}<div id="tbpg" class="tb-pg" aria-hidden="true"><b></b></div>`;
   // Delegasi klik: kata Ibrani → kamus, bagian lain → komentar
@@ -403,7 +403,8 @@ function rnInit() {
     window.RNK = 1;
     addEventListener('keydown', rnKey);
   }
-  if (el.querySelector('.rn-hint')) setTimeout(() => document.querySelector('.rn-hint') && rnHintOff(), 8000);
+  if (el.querySelector('.rn-hint'))
+    setTimeout(() => document.querySelector('.rn-hint') && rnHintOff(), 8000);
 }
 
 /**
@@ -464,7 +465,8 @@ function tbInit() {
     const tb = document.querySelector('.tb'),
       pg = document.getElementById('tbpg');
     if (!tb) return;
-    const hh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hh')) || 53,
+    const hh =
+        parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hh')) || 53,
       c = window.scrollY,
       rt = document.getElementById('rt'),
       // posisi alami toolbar = dasar #rt (tidak terpengaruh transform saat disembunyikan)
