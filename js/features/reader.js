@@ -117,6 +117,7 @@ async function read(ref) {
     .filter(Boolean)
     .map((v) => `${esc(v.versionTitle)} (${esc(v.license || 'lisensi tidak disebutkan')})`)
     .join(' · ');
+  const rn = rnMarkup(d);
   const rt = rtMarkup(trs, pc);
   // Petunjuk sekali tampil: "Klik" untuk mouse, "Ketuk" untuk layar sentuh; dapat ditutup dan diingat
   const act = '<span class="h-fine">Klik</span><span class="h-coarse">Ketuk</span>';
@@ -129,7 +130,7 @@ async function read(ref) {
  <div class="tb"><button data-m="both" onclick="S.mode='both';apply()"><span class="lg">Ibrani + Terjemahan</span><span class="sm">Dua bahasa</span></button><button data-m="he" onclick="S.mode='he';apply()">Ibrani</button><button data-m="en" onclick="S.mode='en';apply()">Terjemahan</button>
  <button id="tbdn" class="tbz" aria-label="Perkecil huruf" title="Perkecil huruf" onclick="S.size=Math.max(14,S.size-2);apply();rtSize()">A−</button><span id="tbsz" class="tbv" aria-live="polite"></span><button id="tbup" class="tbz" aria-label="Perbesar huruf" title="Perbesar huruf" onclick="S.size=Math.min(34,S.size+2);apply();rtSize()">A+</button><button type="button" class="tbt" data-mt-hub title="Terjemahan mesin" onclick="mtHub(this)">${MT_IC}<span class="tbl">Terjemah</span></button><button class="tbn" title="Naskah kuno" onclick="ms(window.RF)">${RT_IC.sc}<span class="tbl">Naskah kuno</span></button>${pc ? rdBtn(pc) : ''}${sel}${d.prev ? `<a class="btn tbp tbp-p" href="#/r/${enc(d.prev)}" aria-label="Pasal sebelumnya" title="${esc(d.prev)}">${RT_IC.bk}</a>` : `<button class="btn tbp tbp-p" disabled aria-label="Tidak ada pasal sebelumnya">${RT_IC.bk}</button>`}${d.next ? `<a class="btn tbp tbp-n" href="#/r/${enc(d.next)}" aria-label="Pasal berikutnya" title="${esc(d.next)}">${RT_IC.gt}</a>` : `<button class="btn tbp tbp-n" disabled aria-label="Tidak ada pasal berikutnya">${RT_IC.gt}</button>`}</div>
  ${mtNote()}${hint}${note ? `<p class="muted rtn">${note}</p>` : ''}${n ? '' : '<p class="muted">Teks tidak tersedia untuk bagian ini. Coba bagian lain dari daftar kitab.</p>'}
- <div id="txt" class="text both">${seg}</div>${rt.end}${nav}<p class="attr">Sumber: Sefaria.org · ${attr}</p>${rt.tools}`;
+ <div id="txt" class="text both">${seg}</div>${rt.end}${nav}<p class="attr">Sumber: Sefaria.org · ${attr}</p>${rt.tools}${rn}`;
   // Delegasi klik: kata Ibrani → kamus, bagian lain → komentar
   document.getElementById('txt').onclick = (e) => {
     // Ikon/hasil terjemah dan klik setelah memblok teks tidak boleh membuka kamus/komentar
@@ -146,6 +147,7 @@ async function read(ref) {
   topicsFor(d.ref || ref);
   apply();
   rtInit();
+  rnInit();
 }
 
 /**
@@ -320,4 +322,85 @@ async function webLoad(ref) {
     if (document.getElementById('wb') === el)
       el.innerHTML = `<p class="muted">Artikel luar tidak bisa dimuat (${esc(e.message)}).</p>`;
   }
+}
+
+/**
+ * Ikon chevron untuk tombol navigasi tepi (kiri = bagian sebelumnya, kanan = berikutnya).
+ */
+const RN_IC = {
+  l: '<svg class="rn-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5l-7 7 7 7"/></svg>',
+  r: '<svg class="rn-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 5l7 7-7 7"/></svg>',
+};
+
+/**
+ * Tombol chevron tetap di tepi kiri/kanan layar baca. d.prev / d.next dari Sefaria sudah memakai
+ * satuan yang tepat (pasal, daf, atau bagian), jadi label tujuan tampil otomatis.
+ * Di awal/akhir kitab tombol tetap ada tetapi redup dan tidak bisa diketuk.
+ */
+function rnMarkup(d) {
+  if (!d.prev && !d.next) return '';
+  const b = (ref, cls, ic, nm) =>
+    ref
+      ? `<a class="rn-b ${cls}" href="#/r/${enc(ref)}" aria-label="${nm}: ${esc(ref)}" title="${esc(ref)}"><span class="rn-c">${ic}</span><span class="rn-l">${esc(ref)}</span></a>`
+      : `<span class="rn-b ${cls} is-off" aria-hidden="true"><span class="rn-c">${ic}</span></span>`;
+  const hint = st.get('rnhint', 0)
+    ? ''
+    : '<div class="rn-hint" role="status"><span>Gunakan tombol ‹ › di tepi layar untuk pindah ke bagian sebelumnya atau berikutnya.</span><button type="button" onclick="rnHintOff()">Mengerti</button></div>';
+  return `<div class="rn" id="rn">${b(d.prev, 'rn-p', RN_IC.l, 'Sebelumnya')}${b(d.next, 'rn-n', RN_IC.r, 'Berikutnya')}${hint}</div>`;
+}
+
+/**
+ * Tutup petunjuk sekali-tampil dan ingat pilihan (dihapus oleh 'Hapus data tersimpan').
+ */
+function rnHintOff() {
+  st.set('rnhint', 1);
+  const h = document.querySelector('.rn-hint');
+  if (h) h.remove();
+}
+
+/**
+ * Pintasan keyboard ← → untuk pindah bagian. Diabaikan saat mengetik, ada teks terpilih,
+ * panel komentar terbuka, atau ada tombol pengubah.
+ */
+function rnKey(e) {
+  if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+  const t = e.target,
+    tag = (t && t.tagName) || '';
+  if (/^(INPUT|SELECT|TEXTAREA)$/.test(tag) || (t && t.isContentEditable)) return;
+  const p = document.getElementById('panel');
+  if ((p && !p.hidden) || document.querySelector('.ptn-sheet.is-open')) return;
+  if (window.getSelection && String(window.getSelection()).trim()) return;
+  const a = document.querySelector(e.key === 'ArrowLeft' ? '#rn a.rn-p' : '#rn a.rn-n');
+  if (a) a.click();
+}
+
+/**
+ * Pasang perilaku tombol tepi: meredup (40%) saat scroll ke bawah, penuh lagi saat scroll ke atas,
+ * disentuh, atau di dekat akhir teks; plus pintasan keyboard dan penutupan otomatis petunjuk.
+ */
+function rnInit() {
+  if (window.RNS) removeEventListener('scroll', window.RNS);
+  window.RNS = null;
+  const el = document.getElementById('rn');
+  if (!el) return;
+  let y = window.scrollY;
+  window.RNS = () => {
+    const box = document.getElementById('rn');
+    if (!box) return;
+    const c = window.scrollY,
+      end = c + window.innerHeight >= document.documentElement.scrollHeight - 240;
+    if (Math.abs(c - y) > 8) {
+      box.classList.toggle('is-dim', c > y && c > 120 && !end);
+      y = c;
+    }
+    if (end) box.classList.remove('is-dim');
+  };
+  addEventListener('scroll', window.RNS, { passive: true });
+  el.addEventListener('pointerdown', () => el.classList.remove('is-dim'));
+  if (!window.RNK) {
+    window.RNK = 1;
+    addEventListener('keydown', rnKey);
+  }
+  if (el.querySelector('.rn-hint')) setTimeout(() => document.querySelector('.rn-hint') && rnHintOff(), 8000);
 }
