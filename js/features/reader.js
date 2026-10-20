@@ -128,9 +128,9 @@ async function read(ref) {
  <h2 class="rt-h2">${esc(d.ref || ref)} <span class="he" style="color:var(--gold)">${esc(d.heRef)}</span>${stg(cat[0]) >= 0 ? `<span class="tag">${esc(dn(cat[0]))} · Tahap ${stg(cat[0]) + 1}</span>` : ''}${rt.acts}</h2>
  <div id="rt"></div>
  <div class="tb"><button data-m="both" onclick="S.mode='both';apply()"><span class="lg">Ibrani + Terjemahan</span><span class="sm">Dua bahasa</span></button><button data-m="he" onclick="S.mode='he';apply()">Ibrani</button><button data-m="en" onclick="S.mode='en';apply()">Terjemahan</button>
- <button id="tbdn" class="tbz" aria-label="Perkecil huruf" title="Perkecil huruf" onclick="S.size=Math.max(14,S.size-2);apply();rtSize()">A−</button><span id="tbsz" class="tbv" aria-live="polite"></span><button id="tbup" class="tbz" aria-label="Perbesar huruf" title="Perbesar huruf" onclick="S.size=Math.min(34,S.size+2);apply();rtSize()">A+</button><button type="button" class="tbt" data-mt-hub title="Terjemahan mesin" onclick="mtHub(this)">${MT_IC}<span class="tbl">Terjemah</span></button><button class="tbn" title="Naskah kuno" onclick="ms(window.RF)">${RT_IC.sc}<span class="tbl">Naskah kuno</span></button>${pc ? rdBtn(pc) : ''}${sel}${d.prev ? `<a class="btn tbp tbp-p" href="#/r/${enc(d.prev)}" aria-label="Pasal sebelumnya" title="${esc(d.prev)}">${RT_IC.bk}</a>` : `<button class="btn tbp tbp-p" disabled aria-label="Tidak ada pasal sebelumnya">${RT_IC.bk}</button>`}${d.next ? `<a class="btn tbp tbp-n" href="#/r/${enc(d.next)}" aria-label="Pasal berikutnya" title="${esc(d.next)}">${RT_IC.gt}</a>` : `<button class="btn tbp tbp-n" disabled aria-label="Tidak ada pasal berikutnya">${RT_IC.gt}</button>`}</div>
+ <button id="tbdn" class="tbz" aria-label="Perkecil huruf" title="Perkecil huruf" onclick="S.size=Math.max(14,S.size-2);apply();rtSize()">A−</button><span id="tbsz" class="tbv" aria-live="polite"></span><button id="tbup" class="tbz" aria-label="Perbesar huruf" title="Perbesar huruf" onclick="S.size=Math.min(34,S.size+2);apply();rtSize()">A+</button><span id="tbpos" class="tb-pos"></span><button id="tbk" class="tbk" type="button" aria-haspopup="true" aria-expanded="false" onclick="tbMenu()">Alat <span aria-hidden="true">▾</span></button><div id="tbm" class="tbm" hidden><button type="button" class="tbt" data-mt-hub title="Terjemahan mesin" onclick="tbClose();mtHub(document.getElementById('tbk'))">${MT_IC}<span class="tbl">Terjemah</span></button><button class="tbn" title="Naskah kuno" onclick="tbClose();ms(window.RF)">${RT_IC.sc}<span class="tbl">Naskah kuno</span></button>${pc ? rdBtn(pc) : ''}</div>${sel}${d.prev ? `<a class="btn tbp tbp-p" href="#/r/${enc(d.prev)}" aria-label="Pasal sebelumnya" title="${esc(d.prev)}">${RT_IC.bk}</a>` : `<button class="btn tbp tbp-p" disabled aria-label="Tidak ada pasal sebelumnya">${RT_IC.bk}</button>`}${d.next ? `<a class="btn tbp tbp-n" href="#/r/${enc(d.next)}" aria-label="Pasal berikutnya" title="${esc(d.next)}">${RT_IC.gt}</a>` : `<button class="btn tbp tbp-n" disabled aria-label="Tidak ada pasal berikutnya">${RT_IC.gt}</button>`}</div>
  ${mtNote()}${hint}${note ? `<p class="muted rtn">${note}</p>` : ''}${n ? '' : '<p class="muted">Teks tidak tersedia untuk bagian ini. Coba bagian lain dari daftar kitab.</p>'}
- <div id="txt" class="text both">${seg}</div>${rt.end}${nav}<p class="attr">Sumber: Sefaria.org · ${attr}</p>${rt.tools}${rn}`;
+ <div id="txt" class="text both">${seg}</div>${rt.end}${nav}<p class="attr">Sumber: Sefaria.org · ${attr}</p>${rt.tools}${rn}<div id="tbpg" class="tb-pg" aria-hidden="true"><b></b></div>`;
   // Delegasi klik: kata Ibrani → kamus, bagian lain → komentar
   document.getElementById('txt').onclick = (e) => {
     // Ikon/hasil terjemah dan klik setelah memblok teks tidak boleh membuka kamus/komentar
@@ -148,6 +148,7 @@ async function read(ref) {
   apply();
   rtInit();
   rnInit();
+  tbInit();
 }
 
 /**
@@ -403,4 +404,112 @@ function rnInit() {
     addEventListener('keydown', rnKey);
   }
   if (el.querySelector('.rn-hint')) setTimeout(() => document.querySelector('.rn-hint') && rnHintOff(), 8000);
+}
+
+/**
+ * Menu "Alat" pada toolbar desktop: Terjemah mesin, Naskah kuno, Tandai sudah dibaca.
+ * Elemen aslinya (termasuk #rdb, sumber kebenaran status baca) dipindah ke dalam menu, bukan diganti.
+ */
+function tbClose() {
+  const m = document.getElementById('tbm'),
+    k = document.getElementById('tbk');
+  if (m) m.hidden = true;
+  if (k) k.setAttribute('aria-expanded', 'false');
+}
+
+function tbMenu() {
+  const m = document.getElementById('tbm'),
+    k = document.getElementById('tbk');
+  if (!m || !k) return;
+  const open = m.hidden;
+  m.hidden = !open;
+  k.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (open) {
+    const f = m.querySelector('button');
+    if (f) f.focus();
+  }
+}
+
+/**
+ * Toolbar baca tiga keadaan (desktop >= 769 px; ponsel hanya sembunyi/muncul + progres):
+ * 1) di atas halaman: satu baris penuh; 2) scroll ke bawah: disembunyikan (hanya garis progres 3 px);
+ * 3) scroll ke atas: bar ramping dengan posisi baca ("Genesis 14:3 · 14 dari 38").
+ * Bar tidak disembunyikan selama menu Alat terbuka. Di ponsel: sembunyi saat scroll turun, muncul saat scroll naik,
+ * plus garis progres (tanpa menu Alat dan label posisi).
+ */
+function tbInit() {
+  if (window.TBS) removeEventListener('scroll', window.TBS);
+  window.TBS = null;
+  if (!document.querySelector('.tb')) return;
+  if (!window.TBG) {
+    window.TBG = 1;
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#tbm, #tbk')) tbClose();
+    });
+    document.addEventListener('keydown', (e) => {
+      const m = document.getElementById('tbm');
+      if (e.key === 'Escape' && m && !m.hidden) {
+        tbClose();
+        const k = document.getElementById('tbk');
+        if (k) k.focus();
+      }
+    });
+  }
+  const mq = window.matchMedia('(min-width: 769px)');
+  let y = window.scrollY,
+    hide = false,
+    busy = false;
+  const run = () => {
+    busy = false;
+    const tb = document.querySelector('.tb'),
+      pg = document.getElementById('tbpg');
+    if (!tb) return;
+    const hh = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hh')) || 53,
+      c = window.scrollY,
+      rt = document.getElementById('rt'),
+      // posisi alami toolbar = dasar #rt (tidak terpengaruh transform saat disembunyikan)
+      stuck = rt ? rt.getBoundingClientRect().bottom + 4 <= hh + 1 : c > 160,
+      menu = document.getElementById('tbm');
+    if (!stuck || (menu && !menu.hidden)) hide = false;
+    else if (c > y + 6) hide = true;
+    else if (c < y - 6) hide = false;
+    if (Math.abs(c - y) > 6) y = c;
+    tb.classList.toggle('is-stuck', stuck);
+    tb.classList.toggle('is-hide', hide);
+    tb.inert = hide;
+    const tx = document.getElementById('txt'),
+      pos = document.getElementById('tbpos');
+    if (tx && stuck && pos && mq.matches) {
+      const segs = tx.querySelectorAll('.seg');
+      let cur = null;
+      for (const s of segs) {
+        if (s.getBoundingClientRect().bottom > hh + 60) {
+          cur = s;
+          break;
+        }
+      }
+      if (cur) {
+        const i = cur.dataset.i,
+          unit = /\d+[ab]$/.test(window.RF || '') ? 'bagian' : 'ayat';
+        pos.textContent = cur.dataset.r
+          ? cur.dataset.r + ' · ' + i + ' dari ' + segs.length
+          : (window.RF || '') + ' · ' + unit + ' ' + i + ' dari ' + segs.length;
+      }
+    }
+    if (pg && tx) {
+      const r = tx.getBoundingClientRect(),
+        total = r.height - window.innerHeight + hh,
+        p = total > 0 ? Math.min(1, Math.max(0, (hh - r.top) / total)) : 0;
+      pg.firstElementChild.style.width = (p * 100).toFixed(1) + '%';
+      pg.classList.toggle('on', c > 40);
+    }
+  };
+  window.TBS = () => {
+    if (!busy) {
+      busy = true;
+      requestAnimationFrame(run);
+    }
+  };
+  addEventListener('scroll', window.TBS, { passive: true });
+  run();
 }

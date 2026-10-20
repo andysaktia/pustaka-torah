@@ -70,7 +70,7 @@ function rtMarkup(trs, pc) {
     RT_IC.aa +
     '</button></span>';
   const end = pc
-    ? '<div class="rt-end"><button id="rde" type="button" onclick="toggleRead()">Tandai sudah dibaca</button></div>'
+    ? '<div class="rt-end"><p class="rt-end-t">Selesai membaca bagian ini?</p><button id="rde" type="button" onclick="toggleRead()">Tandai sudah dibaca</button></div>'
     : '';
   const tools =
     '<div id="rto" class="rto" onclick="rtClose()"></div>' +

@@ -187,3 +187,202 @@ body:has(.ptn-sheet.is-open) .rn {
     transition: none;
   }
 }
+
+/* ===== Toolbar baca desktop: satu baris + menu Alat, sembunyi saat scroll turun, bar ramping saat scroll naik ===== */
+
+.tb-pg,
+.tbk,
+.tbm,
+.tb-pos,
+.rt-end-t {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  /* Garis progres 3 px tepat di bawah header */
+  .tb-pg {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: var(--hh, 53px);
+    z-index: 5;
+    height: 3px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .tb-pg.on {
+    opacity: 1;
+  }
+
+  .tb-pg b {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: var(--ac);
+  }
+
+  .tb {
+    transition:
+      transform 0.22s ease,
+      opacity 0.22s;
+  }
+
+  .tb.is-hide {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  /* Bar ramping: posisi baca di kiri, tanpa pilihan terjemahan (ada di Alat/atas halaman) */
+  .tb-pos {
+    order: 0;
+    flex: 1;
+    min-width: 0;
+    margin-right: 8px;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tb.is-stuck .tb-pos {
+    display: block;
+  }
+
+  .tb.is-stuck select {
+    display: none;
+  }
+
+  .tbk {
+    display: inline-flex;
+    order: 4;
+    margin-left: auto;
+  }
+
+  .tb.is-stuck .tbk {
+    margin-left: 8px;
+  }
+
+  .tbk[aria-expanded='true'] {
+    border-color: var(--ac);
+    color: var(--ac);
+  }
+
+  /* Menu Alat: berisi tombol asli (Terjemah mesin, Naskah kuno, Tandai sudah dibaca) */
+  .tbm:not([hidden]) {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 6;
+    display: flex;
+    flex-direction: column;
+    min-width: 240px;
+    padding: 6px;
+    border: 1px solid var(--bd);
+    border-radius: 10px;
+    background: var(--card);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .tbm button {
+    order: 0;
+    width: 100%;
+    height: 40px;
+    margin: 0;
+    justify-content: flex-start;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+  }
+
+  .tbm button:hover,
+  .tbm button:focus-visible {
+    background: color-mix(in srgb, var(--ac) 10%, transparent);
+  }
+
+  /* Label selalu tampil di dalam menu (aturan lebar sempit menyembunyikannya di toolbar) */
+  .tbm .tbl {
+    display: inline !important;
+  }
+
+  /* Kartu akhir teks di desktop */
+  .rt-end {
+    display: block;
+    margin: 20px 0 0;
+    padding: 16px;
+    border: 1px solid var(--ac);
+    border-radius: 10px;
+    background: var(--card);
+  }
+
+  .rt-end-t {
+    display: block;
+    margin: 0 0 10px;
+    font-weight: 600;
+  }
+
+  .rt-end button {
+    min-height: 44px;
+    padding: 0 16px;
+    border: 1px solid var(--bd);
+    border-radius: 8px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .rt-end button.on {
+    border-color: var(--ac);
+    color: var(--ac);
+    background: color-mix(in srgb, var(--ac) 12%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tb,
+  .tb-pg {
+    transition: none;
+  }
+}
+
+/* ===== Ponsel (<= 768 px): toolbar segmented ikut sembunyi saat scroll turun + garis progres ===== */
+@media (max-width: 768px) {
+  .tb {
+    transition:
+      transform 0.22s ease,
+      opacity 0.22s;
+  }
+
+  .tb.is-hide {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+
+  .tb-pg {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: var(--hh, 53px);
+    z-index: 5;
+    height: 3px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .tb-pg.on {
+    opacity: 1;
+  }
+
+  .tb-pg b {
+    display: block;
+    width: 0;
+    height: 100%;
+    background: var(--ac);
+  }
+}
